@@ -1,0 +1,15 @@
+HELP.md
+target/
+web/target/
+persistence/target/
+service/target/
+log.log
+
+# IntelliJ IDEA
+.idea
+*.iws
+*.iml
+*.ipr
+
+# production
+/build
