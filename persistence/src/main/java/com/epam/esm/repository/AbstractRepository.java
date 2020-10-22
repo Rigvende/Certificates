@@ -30,7 +30,7 @@ public interface AbstractRepository<T extends AbstractEntity> {
      * Method: update database table's row depending on AbstractEntity instance.
      * @throws DaoException object
      * @param entity is type of {@link AbstractEntity} children
-     * @return boolean
+     * @return instance of {@link AbstractEntity} children
      */
     T update(T entity) throws DaoException;
 

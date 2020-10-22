@@ -1,10 +1,7 @@
 package com.epam.esm.controller;
 
-import com.epam.esm.dto.certificate.CertificateResponse;
-import com.epam.esm.dto.certificate.CertificateSaveRequest;
-import com.epam.esm.dto.certificate.CertificateUpdateRequest;
-import com.epam.esm.exception.AlreadyExistException;
-import com.epam.esm.exception.EntityNotFoundException;
+import com.epam.esm.dto.CertificateDto;
+import com.epam.esm.exception.ServiceException;
 import com.epam.esm.service.CertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,31 +20,29 @@ public class CertificateController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CertificateResponse>> findAll() {
+    public ResponseEntity<List<CertificateDto>> findAll() {
         return ResponseEntity.ok(certificateService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CertificateResponse> findById(@PathVariable long id) throws EntityNotFoundException {
+    public ResponseEntity<CertificateDto> findById(@PathVariable long id) throws ServiceException {
         return ResponseEntity.ok(certificateService.findById(id));
     }
 
     @PostMapping
-    public ResponseEntity<String> save(@RequestBody CertificateSaveRequest certificateSaveRequest)
-            throws AlreadyExistException, EntityNotFoundException {
-        certificateService.save(certificateSaveRequest);
+    public ResponseEntity<String> save(@RequestBody CertificateDto certificateDto) throws ServiceException {
+        certificateService.save(certificateDto);
         return ResponseEntity.ok("Certificate has been saved");
     }
 
-    @PutMapping
-    public ResponseEntity<String> update(@RequestBody CertificateUpdateRequest certificateUpdateRequest)
-            throws EntityNotFoundException, AlreadyExistException {
-        certificateService.update(certificateUpdateRequest);
+    @PatchMapping
+    public ResponseEntity<String> update(@RequestBody CertificateDto certificateDto) throws ServiceException {
+        certificateService.update(certificateDto);
         return ResponseEntity.ok("Certificate has been updated");
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id) throws EntityNotFoundException {
+    public ResponseEntity<String> delete(@PathVariable Long id) throws ServiceException {
         certificateService.delete(id);
         return ResponseEntity.ok("Certificate has been deleted");
     }

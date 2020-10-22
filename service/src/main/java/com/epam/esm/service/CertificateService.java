@@ -1,22 +1,19 @@
 package com.epam.esm.service;
 
-import com.epam.esm.dto.certificate.CertificateResponse;
-import com.epam.esm.dto.certificate.CertificateSaveRequest;
-import com.epam.esm.dto.certificate.CertificateUpdateRequest;
-import com.epam.esm.exception.AlreadyExistException;
-import com.epam.esm.exception.EntityNotFoundException;
+import com.epam.esm.dto.CertificateDto;
+import com.epam.esm.exception.ServiceException;
 import java.util.List;
 
 public interface CertificateService {
 
-    CertificateResponse findById(long id) throws EntityNotFoundException;
+    CertificateDto findById(long id) throws ServiceException;
 
-    List<CertificateResponse> findAll();
+    List<CertificateDto> findAll();
 
-    void save(CertificateSaveRequest certificateSaveRequest) throws AlreadyExistException;
+    void save(CertificateDto certificateDto) throws ServiceException;
 
-    void update(CertificateUpdateRequest certificateUpdateRequest) throws EntityNotFoundException;
+    void update(CertificateDto certificateDto) throws ServiceException;
 
-    void delete(long id) throws EntityNotFoundException;
+    void delete(long id) throws ServiceException;
 
 }
