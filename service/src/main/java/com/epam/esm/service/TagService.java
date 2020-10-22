@@ -1,19 +1,23 @@
 package com.epam.esm.service;
 
-import com.epam.esm.dto.tag.TagResponse;
-import com.epam.esm.dto.tag.TagSaveRequest;
-import com.epam.esm.exception.AlreadyExistException;
-import com.epam.esm.exception.EntityNotFoundException;
+import com.epam.esm.dto.TagDto;
+import com.epam.esm.entity.impl.Tag;
+import com.epam.esm.exception.ServiceException;
 import java.util.List;
 
+/**
+ * Interface for business logic concerning {@link Tag} entity
+ * @author Marianna Patrusova
+ * @version 1.0
+ */
 public interface TagService {
 
-    TagResponse findById(long id) throws EntityNotFoundException;
+    TagDto findById(long id) throws ServiceException;
 
-    List<TagResponse> findAll();
+    List<TagDto> findAll();
 
-    void save(TagSaveRequest tagSaveRequest) throws AlreadyExistException;
+    void save(TagDto tagDto) throws ServiceException;
 
-    void delete(long id) throws EntityNotFoundException;
+    void delete(long id) throws ServiceException;
 
 }

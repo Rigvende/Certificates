@@ -1,5 +1,6 @@
 package com.epam.esm.util;
 
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
@@ -10,6 +11,7 @@ import java.util.ResourceBundle;
  * @author Marianna Patrusova
  * @version 1.0
  */
+@Slf4j
 @Component
 public class DbcpManager {
 
@@ -21,12 +23,21 @@ public class DbcpManager {
     private final static String MAX_IDLE = "max.idle";
     private final static String MAX_PS = "max.open.prepared.statements";
     private final static String BUNDLE = "connectionDB";
+    private final DataSource dataSource;
+
+    public DbcpManager() {
+        this.dataSource = createDataSource();
+    }
 
     /**
-     * Method: forms data source using application DB properties.
-     * @return singleton instance of {@link DataSource}
+     * Method: returns data source according with application DB properties.
+     * @return instance of {@link DataSource}
      */
-    public DataSource getDataSource() throws ClassNotFoundException {
+    public DataSource getDataSource() {
+        return dataSource;
+    }
+
+    private DataSource createDataSource() {
         ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE);
         String user = bundle.getString(USER);
         String pass = bundle.getString(PASS);
@@ -35,8 +46,11 @@ public class DbcpManager {
         int minIdle = Integer.parseInt(bundle.getString(MIN_IDLE));
         int maxIdle = Integer.parseInt(bundle.getString(MAX_IDLE));
         int maxPs = Integer.parseInt(bundle.getString(MAX_PS));
-
-        Class.forName(driver);
+        try {
+            Class.forName(driver);
+        } catch (ClassNotFoundException e) {
+            log.error("Driver class not found");
+        }
         BasicDataSource ds = new BasicDataSource();
         ds.setUrl(url);
         ds.setUsername(user);

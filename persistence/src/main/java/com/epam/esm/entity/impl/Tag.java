@@ -3,6 +3,11 @@ package com.epam.esm.entity.impl;
 import com.epam.esm.entity.AbstractEntity;
 import lombok.*;
 
+/**
+ * Class for tag object
+ * @author Marianna Patrusova
+ * @version 1.0
+ */
 @EqualsAndHashCode(callSuper = true)
 @Data
 @Builder
