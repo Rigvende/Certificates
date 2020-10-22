@@ -83,8 +83,8 @@ public class TagServiceImpl implements TagService {
     @Override
     public void delete(long id) throws ServiceException {
         try {
-            Tag tag = tagRepository.findEntityById(id);
-            log.info("Tag has been deleted {}", tag);
+            tagRepository.delete(id);
+            log.info("Tag has been deleted {}", id);
         } catch (DaoException e) {
             throw new ServiceException(NOT_FOUND, e);
         }

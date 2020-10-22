@@ -1,28 +1,28 @@
 package com.epam.esm.repository.impl;
 
 import com.epam.esm.entity.impl.Certificate;
-import com.epam.esm.entity.mapper.CertificateMapper;
+import com.epam.esm.mapper.CertificateMapper;
 import com.epam.esm.exception.DaoException;
 import com.epam.esm.repository.AbstractRepository;
+import com.epam.esm.repository.CrudRepository;
 import com.epam.esm.util.DateConverter;
 import com.epam.esm.util.DbcpManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * Child class of {@link AbstractRepository} interface
+ * Child class of {@link CrudRepository} interface
  * Provides CRUD and search operations for Certificate entities
  * @author Marianna Patrusova
  * @version 1.0
  */
 @Slf4j
 @Repository
-public class CertificateRepository implements AbstractRepository<Certificate> {
+public class CertificateRepository extends AbstractRepository<Certificate> {
 
     private final static String SQL_SAVE_CERTIFICATE =
             "insert into certificates (name, description, price, create_date, duration) values (?, ?, ?, ?, ?);";
@@ -35,14 +35,11 @@ public class CertificateRepository implements AbstractRepository<Certificate> {
     private final static String SQL_SAVE_CERTIFICATE_TAG =
             "insert into certificate_tag (id_certificate, id_tag) values (?, ?);";
 
-    private final CertificateMapper certificateMapper;
-    private final JdbcTemplate jdbcTemplate;
-
     @Autowired
     public CertificateRepository(CertificateMapper certificateMapper,
                                  DbcpManager dbcpManager) {
         this.certificateMapper = certificateMapper;
-        jdbcTemplate = new JdbcTemplate(dbcpManager.getDataSource());
+        this.jdbcTemplate = new JdbcTemplate(dbcpManager.getDataSource());
     }
 
     @Override

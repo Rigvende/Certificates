@@ -80,11 +80,6 @@ public class CertificateServiceImpl implements CertificateService {
         log.info("Certificate has been saved {}", savedCertificate);
     }
 
-    private void saveTag(long id, CertificateDto certificateDto) {
-        List<Long> tagIds = certificateDto.getTagIds();
-        tagIds.forEach(tagId -> certificateRepository.saveTag(id, tagId));
-    }
-
     /**
      * Method: update fields of one {@link Certificate} entity
      * @throws ServiceException if entity not found
@@ -95,6 +90,9 @@ public class CertificateServiceImpl implements CertificateService {
         final Certificate certificate = certificateDtoConverter.toUpdatedCertificate(certificateDto);
         try {
             Certificate updatedCertificate = certificateRepository.update(certificate);
+            //add values to tag-certificate cross table:
+            long id = updatedCertificate.getId();
+            saveTag(id, certificateDto);
             log.info("Certificate has been updated {}", updatedCertificate);
         } catch (DaoException e) {
             throw new ServiceException(NOT_FOUND, e);
@@ -109,11 +107,16 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public void delete(long id) throws ServiceException {
         try {
-            Certificate certificate = certificateRepository.findEntityById(id);
-            log.info("Certificate has been deleted {}", certificate);
+            certificateRepository.delete(id);
+            log.info("Certificate has been deleted {}", id);
         } catch (DaoException e) {
             throw new ServiceException(NOT_FOUND, e);
         }
+    }
+
+    private void saveTag(long id, CertificateDto certificateDto) {
+        List<Long> tagIds = certificateDto.getTagIds();
+        tagIds.forEach(tagId -> certificateRepository.saveTag(id, tagId));
     }
 
 }
