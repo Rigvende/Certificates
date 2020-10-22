@@ -13,6 +13,12 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import static com.epam.esm.exception.message.ServiceExceptionMessage.*;
 
+/**
+ * Class provides business logic methods for CRD and search operations
+ * concerning {@link Tag} entity
+ * @author Marianna Patrusova
+ * @version 1.0
+ */
 @Service
 @Slf4j
 public class TagServiceImpl implements TagService {
@@ -26,6 +32,12 @@ public class TagServiceImpl implements TagService {
         this.tagDtoConverter = tagDtoConverter;
     }
 
+    /**
+     * Method: find one {@link Tag} entity
+     * @param id: tag id
+     * @throws ServiceException if entity not found
+     * @return instance of ({@link TagDto}
+     */
     @Override
     public TagDto findById(long id) throws ServiceException {
         try {
@@ -36,12 +48,21 @@ public class TagServiceImpl implements TagService {
         }
     }
 
+    /**
+     * Method: find one or more {@link Tag} entity
+     * @return list of ({@link TagDto} entities
+     */
     @Override
     public List<TagDto> findAll() {
         List<Tag> tags = tagRepository.findAll();
         return tagDtoConverter.toResponseDtoList(tags);
     }
 
+    /**
+     * Method: save one {@link Tag} entity
+     * @throws ServiceException if entity already exists
+     * @param tagDto: instance of {@link TagDto}
+     */
     @Override
     public void save(TagDto tagDto) throws ServiceException {
         final Tag tag = tagDtoConverter.toNewTag(tagDto);
@@ -54,6 +75,11 @@ public class TagServiceImpl implements TagService {
         log.info("Tag has been saved {}", savedTag);
     }
 
+    /**
+     * Method: delete one {@link Tag} entity
+     * @throws ServiceException if entity not found
+     * @param id: tag id
+     */
     @Override
     public void delete(long id) throws ServiceException {
         try {

@@ -1,6 +1,7 @@
 package com.epam.esm.controller;
 
 import com.epam.esm.dto.CertificateDto;
+import com.epam.esm.entity.impl.Certificate;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.service.CertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,6 +9,12 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
+/**
+ * Class-controller for REST-operations with {@link Certificate} entity
+ * Provides endpoints for CRUD and search operations
+ * @author Marianna Patrusova
+ * @version 1.0
+ */
 @RestController
 @RequestMapping("/v1/certificates")
 public class CertificateController {

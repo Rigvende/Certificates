@@ -11,8 +11,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
-import static com.epam.esm.exception.message.ServiceExceptionMessage.*;
+import static com.epam.esm.exception.message.ServiceExceptionMessage.ALREADY_EXISTS;
+import static com.epam.esm.exception.message.ServiceExceptionMessage.NOT_FOUND;
 
+/**
+ * Class provides business logic methods for CRUD and search operations
+ * concerning {@link Certificate} entity
+ * @author Marianna Patrusova
+ * @version 1.0
+ */
 @Service
 @Slf4j
 public class CertificateServiceImpl implements CertificateService {
@@ -27,6 +34,12 @@ public class CertificateServiceImpl implements CertificateService {
         this.certificateDtoConverter = certificateDtoConverter;
     }
 
+    /**
+     * Method: find one {@link Certificate} entity
+     * @param id: certificate id
+     * @throws ServiceException if entity not found
+     * @return instance of ({@link CertificateDto}
+     */
     @Override
     public CertificateDto findById(long id) throws ServiceException {
         try {
@@ -37,12 +50,21 @@ public class CertificateServiceImpl implements CertificateService {
         }
     }
 
+    /**
+     * Method: find one or more {@link Certificate} entity
+     * @return list of ({@link CertificateDto} entities
+     */
     @Override
     public List<CertificateDto> findAll() {
         final List<Certificate> certificates = certificateRepository.findAll();
         return certificateDtoConverter.toResponseDtoList(certificates);
     }
 
+    /**
+     * Method: save one {@link Certificate} entity and its tags
+     * @throws ServiceException if entity already exists
+     * @param certificateDto: instance of {@link CertificateDto}
+     */
     @Override
     public void save(CertificateDto certificateDto) throws ServiceException {
         final Certificate certificate = certificateDtoConverter.toNewCertificate(certificateDto);
@@ -63,6 +85,11 @@ public class CertificateServiceImpl implements CertificateService {
         tagIds.forEach(tagId -> certificateRepository.saveTag(id, tagId));
     }
 
+    /**
+     * Method: update fields of one {@link Certificate} entity
+     * @throws ServiceException if entity not found
+     * @param certificateDto: instance of {@link CertificateDto}
+     */
     @Override
     public void update(CertificateDto certificateDto) throws ServiceException {
         final Certificate certificate = certificateDtoConverter.toUpdatedCertificate(certificateDto);
@@ -74,6 +101,11 @@ public class CertificateServiceImpl implements CertificateService {
         }
     }
 
+    /**
+     * Method: delete one {@link Certificate} entity
+     * @throws ServiceException if entity not found
+     * @param id: certificate id
+     */
     @Override
     public void delete(long id) throws ServiceException {
         try {

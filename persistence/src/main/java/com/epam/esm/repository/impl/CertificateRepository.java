@@ -1,6 +1,7 @@
 package com.epam.esm.repository.impl;
 
 import com.epam.esm.entity.impl.Certificate;
+import com.epam.esm.entity.mapper.CertificateMapper;
 import com.epam.esm.exception.DaoException;
 import com.epam.esm.repository.AbstractRepository;
 import com.epam.esm.util.DateConverter;
@@ -10,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
@@ -20,7 +21,7 @@ import java.util.List;
  * @version 1.0
  */
 @Slf4j
-@Component
+@Repository
 public class CertificateRepository implements AbstractRepository<Certificate> {
 
     private final static String SQL_SAVE_CERTIFICATE =
@@ -34,20 +35,14 @@ public class CertificateRepository implements AbstractRepository<Certificate> {
     private final static String SQL_SAVE_CERTIFICATE_TAG =
             "insert into certificate_tag (id_certificate, id_tag) values (?, ?);";
 
+    private final CertificateMapper certificateMapper;
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Certificate> rowMapper;
-    private final DateConverter dateConverter;
-    private final DbcpManager dbcpManager;
 
     @Autowired
-    public CertificateRepository(JdbcTemplate jdbcTemplate,
-                                 RowMapper<Certificate> rowMapper,
-                                 DateConverter dateConverter,
+    public CertificateRepository(CertificateMapper certificateMapper,
                                  DbcpManager dbcpManager) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.dbcpManager = dbcpManager;
-        this.rowMapper = rowMapper;
-        this.dateConverter = dateConverter;
+        this.certificateMapper = certificateMapper;
+        jdbcTemplate = new JdbcTemplate(dbcpManager.getDataSource());
     }
 
     @Override
@@ -56,7 +51,7 @@ public class CertificateRepository implements AbstractRepository<Certificate> {
                 (
                         SQL_SAVE_CERTIFICATE, certificate.getName(),
                         certificate.getDescription(), certificate.getPrice(),
-                        dateConverter.convertSqlTimestampFromDate(certificate.getCreateDate()),
+                        DateConverter.convertSqlTimestampFromDate(certificate.getCreateDate()),
                         certificate.getDuration()
                 ) > 0;
         return findEntityById(certificate.getId());
@@ -73,31 +68,26 @@ public class CertificateRepository implements AbstractRepository<Certificate> {
 
     @Override
     public Certificate update(Certificate certificate) throws DaoException {
-        if (certificate.getId() != null) {
-            assert jdbcTemplate.update
+        assert certificate.getId() != null && jdbcTemplate.update
                     (
                             SQL_UPDATE_CERTIFICATE, certificate.getName(),
                             certificate.getDescription(), certificate.getPrice(),
-                            dateConverter.convertSqlTimestampFromDate(certificate.getLastUpdateDate()),
+                            DateConverter.convertSqlTimestampFromDate(certificate.getLastUpdateDate()),
                             certificate.getDuration(), certificate.getId()
                     ) > 0;
-            return findEntityById(certificate.getId());
-        } else {
-            log.debug("Certificate not found for update: id is null");
-            throw new DaoException("Certificate not found for update");
-        }
+        return findEntityById(certificate.getId());
     }
 
     @Override
     public List<Certificate> findAll() {
-        return jdbcTemplate.query(SQL_FIND_CERTIFICATE, rowMapper);
+        return jdbcTemplate.query(SQL_FIND_CERTIFICATE, certificateMapper);
     }
 
     @Override
     public Certificate findEntityById(long id) throws DaoException {
         Certificate certificate;
         try {
-            certificate = jdbcTemplate.queryForObject(SQL_FIND_CERTIFICATE, new Object[]{id}, rowMapper);
+            certificate = jdbcTemplate.queryForObject(SQL_FIND_CERTIFICATE, new Object[]{id}, certificateMapper);
         } catch (DataAccessException e) {
             log.debug("Couldn't find entity of type Certificate with id {}", id);
             throw new DaoException(e);

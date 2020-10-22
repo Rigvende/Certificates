@@ -7,9 +7,20 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Class-converter(mapper) from {@link Certificate}
+ * to {@link CertificateDto} and vice versa
+ * @author Marianna Patrusova
+ * @version 1.0
+ */
 @Component
 public class CertificateDtoConverter {
 
+    /**
+     * Method: convert certificate to its DTO
+     * @param certificate: instance of {@link Certificate}
+     * @return instance of {@link CertificateDto}
+     */
     public CertificateDto toResponseDto(Certificate certificate) {
         CertificateDto certificateDto = new CertificateDto();
         certificateDto.setId(certificate.getId());
@@ -22,6 +33,11 @@ public class CertificateDtoConverter {
         return certificateDto;
     }
 
+    /**
+     * Method: convert list of certificates to its DTO list
+     * @param certificates: list of instances of {@link Certificate}
+     * @return list of instances of {@link CertificateDto}
+     */
     public List<CertificateDto> toResponseDtoList(List<Certificate> certificates) {
         List<CertificateDto> certificateDtos = new ArrayList<>();
         for (Certificate certificate: certificates) {
@@ -30,6 +46,11 @@ public class CertificateDtoConverter {
         return certificateDtos;
     }
 
+    /**
+     * Method: convert certificate DTO to new certificate
+     * @param certificateDto: instance of {@link CertificateDto}
+     * @return instance of {@link Certificate}
+     */
     public Certificate toNewCertificate(CertificateDto certificateDto) {
         return Certificate.builder()
                 .name(certificateDto.getName())
@@ -40,6 +61,11 @@ public class CertificateDtoConverter {
                 .build();
     }
 
+    /**
+     * Method: convert certificate DTO to updated certificate
+     * @param certificateDto: instance of {@link CertificateDto}
+     * @return instance of {@link Certificate}
+     */
     public Certificate toUpdatedCertificate(CertificateDto certificateDto) {
         return Certificate.builder()
                 .id(certificateDto.getId())
@@ -47,7 +73,6 @@ public class CertificateDtoConverter {
                 .description(certificateDto.getDescription())
                 .price(certificateDto.getPrice())
                 .duration(certificateDto.getDuration())
-                .createDate(certificateDto.getCreateDate())
                 .lastUpdateDate(LocalDateTime.now())
                 .build();
     }

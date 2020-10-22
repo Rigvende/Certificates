@@ -1,6 +1,14 @@
 package com.epam.esm.exception;
 
-public class DaoException extends Exception {
+/**
+ * Class for throwing exceptions on the persistence layer
+ * @author Marianna Patrusova
+ * @version 1.0
+ */
+public class DaoException extends RuntimeException {
+
+    private static final long serialVersionUID = -5229618385276143143L;
+
     public DaoException() {
     }
 
@@ -15,4 +23,5 @@ public class DaoException extends Exception {
     public DaoException(Throwable cause) {
         super(cause);
     }
+
 }

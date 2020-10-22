@@ -9,7 +9,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
+
+import javax.sql.DataSource;
 import java.util.List;
 
 /**
@@ -19,24 +21,21 @@ import java.util.List;
  * @version 1.0
  */
 @Slf4j
-@Component
+@Repository
 public class TagRepository implements AbstractRepository<Tag> {
 
     private final static String SQL_SAVE_TAG = "insert into tags (name) values (?);";
     private final static String SQL_DELETE_TAG = "delete from tags where id_tag = ?;";
     private final static String SQL_FIND_TAG = "select id_tag, name from tags where id_tag = ?;";
 
-    private final JdbcTemplate jdbcTemplate;
     private final TagMapper tagMapper;
-    private final DbcpManager dbcpManager;
+    private final JdbcTemplate jdbcTemplate;
 
     @Autowired
     public TagRepository(DbcpManager dbcpManager,
-                         TagMapper tagMapper,
-                         JdbcTemplate jdbcTemplate) {
-        this.dbcpManager = dbcpManager;
+                         TagMapper tagMapper) {
         this.tagMapper = tagMapper;
-        this.jdbcTemplate = jdbcTemplate;
+        jdbcTemplate = new JdbcTemplate(dbcpManager.getDataSource());
     }
 
     @Override
