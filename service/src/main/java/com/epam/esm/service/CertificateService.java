@@ -12,14 +12,14 @@ import java.util.List;
  */
 public interface CertificateService {
 
-    CertificateDto findById(long id) throws ServiceException;
+    CertificateDto findById(Long id) throws ServiceException;
 
     List<CertificateDto> findAll();
 
     void save(CertificateDto certificateDto) throws ServiceException;
 
-    void update(CertificateDto certificateDto) throws ServiceException;
+    void update(Long id, CertificateDto certificateDto) throws ServiceException;
 
-    void delete(long id) throws ServiceException;
+    void delete(Long id) throws ServiceException;
 
 }

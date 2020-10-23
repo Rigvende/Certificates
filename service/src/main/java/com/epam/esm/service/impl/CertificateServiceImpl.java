@@ -11,6 +11,7 @@ import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.impl.CertificateRepository;
 import com.epam.esm.repository.impl.TagRepository;
 import com.epam.esm.service.CertificateService;
+import com.epam.esm.util.NotNullFieldConsumer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -55,7 +56,7 @@ public class CertificateServiceImpl implements CertificateService {
      * @return instance of ({@link CertificateDto}
      */
     @Override
-    public CertificateDto findById(long id) throws ServiceException {
+    public CertificateDto findById(Long id) throws ServiceException {
         try {
             Certificate certificate = certificateRepository.findEntityById(id);
             return certificateDtoConverter.toResponseDto(certificate);
@@ -88,7 +89,7 @@ public class CertificateServiceImpl implements CertificateService {
         } catch (DaoException e) {
             throw new ServiceException(ALREADY_EXISTS, e);
         }
-        updateTags(certificateDto, savedCertificate.getId());
+        updateTags(certificateDto.getTags(), savedCertificate.getId());
         log.info("Certificate has been saved {}", savedCertificate);
     }
 
@@ -98,15 +99,16 @@ public class CertificateServiceImpl implements CertificateService {
      * @param certificateDto: instance of {@link CertificateDto}
      */
     @Override
-    public void update(CertificateDto certificateDto) throws ServiceException {
-        final Certificate certificate = certificateDtoConverter.toUpdatedCertificate(certificateDto);
+    public void update(Long id, CertificateDto certificateDto) throws ServiceException {
+        Certificate certificate = certificateRepository.findEntityById(id);
+        certificate = certificateDtoConverter.toUpdatedCertificate(certificate, certificateDto);
         Certificate updatedCertificate;
         try {
             updatedCertificate = certificateRepository.update(certificate);
         } catch (DaoException e) {
             throw new ServiceException(NOT_FOUND, e);
         }
-        updateTags(certificateDto, updatedCertificate.getId());
+        updateTags(certificateDto.getTags(), id);
         log.info("Certificate has been updated {}", updatedCertificate);
     }
 
@@ -116,7 +118,7 @@ public class CertificateServiceImpl implements CertificateService {
      * @param id: certificate id
      */
     @Override
-    public void delete(long id) throws ServiceException {
+    public void delete(Long id) throws ServiceException {
         try {
             certificateRepository.delete(id);
             log.info("Certificate has been deleted {}", id);
@@ -125,8 +127,7 @@ public class CertificateServiceImpl implements CertificateService {
         }
     }
 
-    private void updateTags(CertificateDto certificateDto, long id) {
-        List<TagDto> allTags = certificateDto.getTags();
+    private void updateTags(List<TagDto> allTags, Long id) {
         List<Tag> newTags = saveTags(allTags);
         if (newTags.size() > 0) {
             saveCertificateCrossTag(id, newTags);
@@ -145,13 +146,13 @@ public class CertificateServiceImpl implements CertificateService {
                 .collect(Collectors.toList());
     }
 
-    private void deleteCertificateCrossTag(long id, List<TagDto> tags) {
+    private void deleteCertificateCrossTag(Long id, List<TagDto> tags) {
         tags.stream()
                 .filter(tag -> tag.getName().equals("deleted"))
                 .forEach(tag -> certificateRepository.deleteCertificateCrossTag(id, tag.getId()));
     }
 
-    private void saveCertificateCrossTag(long id, List<Tag> tags) {
+    private void saveCertificateCrossTag(Long id, List<Tag> tags) {
         tags.forEach(tag -> certificateRepository.saveCertificateCrossTag(id, tag.getId()));
     }
 

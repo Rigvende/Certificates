@@ -16,7 +16,7 @@ import java.util.List;
  * @version 1.0
  */
 @RestController
-@RequestMapping("/v1/certificates")
+@RequestMapping(value = "/v1/certificates", produces = "application/json")
 public class CertificateController {
 
     private final CertificateService certificateService;
@@ -32,24 +32,25 @@ public class CertificateController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CertificateDto> findById(@PathVariable long id) throws ServiceException {
+    public ResponseEntity<CertificateDto> findById(@PathVariable("id") Long id) throws ServiceException {
         return ResponseEntity.ok(certificateService.findById(id));
     }
 
-    @PostMapping
+    @PostMapping(consumes = "application/json")
     public ResponseEntity<String> save(@RequestBody CertificateDto certificateDto) throws ServiceException {
         certificateService.save(certificateDto);
         return ResponseEntity.ok("Certificate has been saved");
     }
 
-    @PatchMapping
-    public ResponseEntity<String> update(@RequestBody CertificateDto certificateDto) throws ServiceException {
-        certificateService.update(certificateDto);
+    @PatchMapping(path = "/{id}", consumes = "application/json")
+    public ResponseEntity<String> update(@PathVariable("id") Long id,
+                                         @RequestBody CertificateDto certificateDto) throws ServiceException {
+        certificateService.update(id, certificateDto);
         return ResponseEntity.ok("Certificate has been updated");
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id) throws ServiceException {
+    public ResponseEntity<String> delete(@PathVariable("id") Long id) throws ServiceException {
         certificateService.delete(id);
         return ResponseEntity.ok("Certificate has been deleted");
     }

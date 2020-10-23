@@ -41,7 +41,7 @@ public class TagServiceImpl implements TagService {
      * @return instance of ({@link TagDto}
      */
     @Override
-    public TagDto findById(long id) throws ServiceException {
+    public TagDto findById(Long id) throws ServiceException {
         try {
             Tag tag = tagRepository.findEntityById(id);
             return tagDtoConverter.toResponseDto(tag);
@@ -83,7 +83,7 @@ public class TagServiceImpl implements TagService {
      * @param id: tag id
      */
     @Override
-    public void delete(long id) throws ServiceException {
+    public void delete(Long id) throws ServiceException {
         try {
             tagRepository.delete(id);
             log.info("Tag has been deleted {}", id);

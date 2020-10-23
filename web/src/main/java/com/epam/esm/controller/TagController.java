@@ -17,7 +17,7 @@ import java.util.List;
  * @version 1.0
  */
 @RestController
-@RequestMapping("/v1/tags")
+@RequestMapping(value = "/v1/tags", produces = "application/json")
 public class TagController {
 
     private final TagService tagService;
@@ -33,18 +33,18 @@ public class TagController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<TagDto> findById(@PathVariable long id) throws ServiceException {
+    public ResponseEntity<TagDto> findById(@PathVariable("id") Long id) throws ServiceException {
         return ResponseEntity.ok(tagService.findById(id));
     }
 
-    @PostMapping
+    @PostMapping (consumes = "application/json")
     public ResponseEntity<String> save(@RequestBody TagDto tagDto) throws ServiceException {
         tagService.save(tagDto);
         return ResponseEntity.ok("Tag has been saved");
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable Long id) throws ServiceException {
+    public ResponseEntity<String> delete(@PathVariable("id") Long id) throws ServiceException {
         tagService.delete(id);
         return ResponseEntity.ok("Tag has been deleted");
     }

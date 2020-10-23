@@ -12,12 +12,12 @@ import java.util.List;
  */
 public interface TagService {
 
-    TagDto findById(long id) throws ServiceException;
+    TagDto findById(Long id) throws ServiceException;
 
     List<TagDto> findAll();
 
     void save(TagDto tagDto) throws ServiceException;
 
-    void delete(long id) throws ServiceException;
+    void delete(Long id) throws ServiceException;
 
 }
