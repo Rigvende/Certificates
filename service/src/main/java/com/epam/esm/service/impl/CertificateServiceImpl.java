@@ -116,7 +116,7 @@ public class CertificateServiceImpl implements CertificateService {
 
     private void saveTag(long id, CertificateDto certificateDto) {
         List<Long> tagIds = certificateDto.getTagIds();
-        tagIds.forEach(tagId -> certificateRepository.saveTag(id, tagId));
+        tagIds.forEach(tagId -> certificateRepository.saveCertificateCrossTag(id, tagId));
     }
 
 }
