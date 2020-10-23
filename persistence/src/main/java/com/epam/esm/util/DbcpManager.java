@@ -2,9 +2,13 @@ package com.epam.esm.util;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.sql.DataSource;
-import java.util.ResourceBundle;
 
 /**
  * Class for forming application data source
@@ -13,52 +17,50 @@ import java.util.ResourceBundle;
  */
 @Slf4j
 @Component
+@EnableTransactionManagement
+@PropertySource("classpath:connectionDB.properties")
 public class DbcpManager {
 
-    private final static String USER = "user";
-    private final static String PASS = "pass";
-    private final static String URL = "url";
-    private final static String DRIVER = "driver";
-    private final static String MIN_IDLE = "min.idle";
-    private final static String MAX_IDLE = "max.idle";
-    private final static String MAX_PS = "max.open.prepared.statements";
-    private final static String BUNDLE = "connectionDB";
-    private final DataSource dataSource;
+    @Value("${db.user}")
+    private String USER;
 
-    public DbcpManager() {
-        this.dataSource = createDataSource();
-    }
+    @Value("${db.pass")
+    private String PASS;
+
+    @Value("${db.url")
+    private String URL;
+
+    @Value("${db.driver")
+    private String DRIVER;
+
+    @Value("${db.min.idle")
+    private String MIN_IDLE;
+
+    @Value("${db.max.idle")
+    private String MAX_IDLE;
+
+    @Value("${db.max.open.prepared.statements")
+    private String MAX_PS;
 
     /**
      * Method: returns data source according with application DB properties.
      * @return instance of {@link DataSource}
      */
-    public DataSource getDataSource() {
-        return dataSource;
-    }
-
-    private DataSource createDataSource() {
-        ResourceBundle bundle = ResourceBundle.getBundle(BUNDLE);
-        String user = bundle.getString(USER);
-        String pass = bundle.getString(PASS);
-        String url = bundle.getString(URL);
-        String driver = bundle.getString(DRIVER);
-        int minIdle = Integer.parseInt(bundle.getString(MIN_IDLE));
-        int maxIdle = Integer.parseInt(bundle.getString(MAX_IDLE));
-        int maxPs = Integer.parseInt(bundle.getString(MAX_PS));
+    @Bean
+    @Primary
+    public DataSource dataSource() {
         try {
-            Class.forName(driver);
+            Class.forName(DRIVER);
         } catch (ClassNotFoundException e) {
             log.error("Driver class not found");
         }
         BasicDataSource ds = new BasicDataSource();
-        ds.setUrl(url);
-        ds.setUsername(user);
-        ds.setPassword(pass);
-        ds.setMinIdle(minIdle);
-        ds.setMaxIdle(maxIdle);
-        ds.setMaxOpenPreparedStatements(maxPs);
-
+        ds.setUrl(URL);
+        ds.setUsername(USER);
+        ds.setPassword(PASS);
+        ds.setMinIdle(Integer.parseInt(MIN_IDLE));
+        ds.setMaxIdle(Integer.parseInt(MAX_IDLE));
+        ds.setMaxOpenPreparedStatements(Integer.parseInt(MAX_PS));
         return ds;
     }
 

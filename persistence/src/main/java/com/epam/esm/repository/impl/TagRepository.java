@@ -5,12 +5,12 @@ import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.exception.DaoException;
 import com.epam.esm.repository.AbstractRepository;
 import com.epam.esm.repository.CrudRepository;
-import com.epam.esm.util.DbcpManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import javax.sql.DataSource;
 import java.util.List;
 
 /**
@@ -28,10 +28,10 @@ public class TagRepository extends AbstractRepository<Tag> {
     private final static String SQL_FIND_TAG = "select id_tag, name from tags where id_tag = ?;";
 
     @Autowired
-    public TagRepository(DbcpManager dbcpManager,
+    public TagRepository(DataSource dataSource,
                          TagMapper tagMapper) {
         this.tagMapper = tagMapper;
-        this.jdbcTemplate = new JdbcTemplate(dbcpManager.getDataSource());
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     @Override

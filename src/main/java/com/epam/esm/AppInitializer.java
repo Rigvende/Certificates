@@ -2,7 +2,12 @@ package com.epam.esm;
 
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
-public class CertificatesInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+/**
+ * Class for DispatcherServlet init
+ * @author Marianna Patrusova
+ * @version 1.0
+ */
+public class AppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
@@ -11,7 +16,7 @@ public class CertificatesInitializer extends AbstractAnnotationConfigDispatcherS
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class[]{SpringConfig.class};
+        return new Class[]{AppSpringConfig.class};
     }
 
     @Override

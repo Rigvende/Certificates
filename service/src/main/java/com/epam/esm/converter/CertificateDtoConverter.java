@@ -3,7 +3,7 @@ package com.epam.esm.converter;
 import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.entity.impl.Certificate;
 import org.springframework.stereotype.Component;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,7 +57,7 @@ public class CertificateDtoConverter {
                 .description(certificateDto.getDescription())
                 .price(certificateDto.getPrice())
                 .duration(certificateDto.getDuration())
-                .createDate(LocalDateTime.now())
+                .createDate(OffsetDateTime.now())
                 .build();
     }
 
@@ -73,7 +73,7 @@ public class CertificateDtoConverter {
                 .description(certificateDto.getDescription())
                 .price(certificateDto.getPrice())
                 .duration(certificateDto.getDuration())
-                .lastUpdateDate(LocalDateTime.now())
+                .lastUpdateDate(OffsetDateTime.now())
                 .build();
     }
 

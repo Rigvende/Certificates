@@ -6,12 +6,16 @@ import com.epam.esm.exception.DaoException;
 import com.epam.esm.repository.AbstractRepository;
 import com.epam.esm.repository.CrudRepository;
 import com.epam.esm.util.DateConverter;
-import com.epam.esm.util.DbcpManager;
+import com.epam.esm.util.DateFormatter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
+import javax.sql.DataSource;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 /**
@@ -37,9 +41,9 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
 
     @Autowired
     public CertificateRepository(CertificateMapper certificateMapper,
-                                 DbcpManager dbcpManager) {
+                                 DataSource dataSource) {
         this.certificateMapper = certificateMapper;
-        this.jdbcTemplate = new JdbcTemplate(dbcpManager.getDataSource());
+        this.jdbcTemplate = new JdbcTemplate(dataSource);
     }
 
     @Override
@@ -48,7 +52,7 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
                 (
                         SQL_SAVE_CERTIFICATE, certificate.getName(),
                         certificate.getDescription(), certificate.getPrice(),
-                        DateConverter.convertSqlTimestampFromDate(certificate.getCreateDate()),
+                        offsetToTimestamp(certificate.getCreateDate()),
                         certificate.getDuration()
                 ) > 0;
         return findEntityById(certificate.getId());
@@ -69,7 +73,7 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
                     (
                             SQL_UPDATE_CERTIFICATE, certificate.getName(),
                             certificate.getDescription(), certificate.getPrice(),
-                            DateConverter.convertSqlTimestampFromDate(certificate.getLastUpdateDate()),
+                            offsetToTimestamp(certificate.getLastUpdateDate()),
                             certificate.getDuration(), certificate.getId()
                     ) > 0;
         return findEntityById(certificate.getId());
@@ -90,6 +94,11 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
             throw new DaoException(e);
         }
         return certificate;
+    }
+
+    private Timestamp offsetToTimestamp(OffsetDateTime offsetDateTime) {
+        LocalDateTime localDateTime = DateFormatter.formatDateToLocal(offsetDateTime);
+        return DateConverter.convertSqlTimestampFromDate(localDateTime);
     }
 
 }

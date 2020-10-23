@@ -4,9 +4,10 @@ import com.epam.esm.entity.AbstractEntity;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 /**
- * Class for certificate object
+ * Class for certificate entity
  * @author Marianna Patrusova
  * @version 1.0
  */
@@ -22,8 +23,8 @@ public class Certificate extends AbstractEntity {
     private String name;
     private String description;
     private BigDecimal price;
-    private LocalDateTime createDate;
-    private LocalDateTime lastUpdateDate;
+    private OffsetDateTime createDate;
+    private OffsetDateTime lastUpdateDate;
     private int duration;  //in days
 
 }

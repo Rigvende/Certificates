@@ -4,7 +4,7 @@ import com.epam.esm.entity.AbstractEntity;
 import lombok.*;
 
 /**
- * Class for tag object
+ * Class for tag entity
  * @author Marianna Patrusova
  * @version 1.0
  */

@@ -8,15 +8,20 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
+/**
+ * Class for app configuration
+ * @author Marianna Patrusova
+ * @version 1.0
+ */
 @EnableWebMvc
 @Configuration
 @ComponentScan({"com.epam.esm"})
-public class SpringConfig implements WebMvcConfigurer {
+public class AppSpringConfig implements WebMvcConfigurer {
 
     private final ApplicationContext applicationContext;
 
     @Autowired
-    public SpringConfig(ApplicationContext applicationContext) {
+    public AppSpringConfig(ApplicationContext applicationContext) {
         this.applicationContext = applicationContext;
     }
 
