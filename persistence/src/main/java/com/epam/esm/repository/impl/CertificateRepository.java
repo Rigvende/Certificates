@@ -30,6 +30,8 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
             "insert into certificates (name, description, price, create_date, duration) values (?, ?, ?, ?, ?);";
     private final static String SQL_SAVE_CERTIFICATE_TAG =
             "insert into certificate_tag (id_certificate, id_tag) values (?, ?);";
+    private final static String SQL_DELETE_CERTIFICATE_TAG =
+            "delete from certificate_tag where id_tag = ? and id_certificate = ?";
     private final static String SQL_UPDATE_CERTIFICATE =
             "update certificates set name = ?, description = ?, price = ?, last_update_date = ?, duration = ? " +
                     "where id_certificate = ?;";
@@ -68,6 +70,15 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
      */
     public void saveCertificateCrossTag(long certificateId, long tagId) {
         jdbcTemplate.update(SQL_SAVE_CERTIFICATE_TAG, certificateId, tagId);
+    }
+
+    /**
+     * Method: save many-to-many connection between tag and certificate in the cross database table.
+     * @param  certificateId: certificate id
+     * @param tagId: tag id
+     */
+    public void deleteCertificateCrossTag(long certificateId, long tagId) {
+        jdbcTemplate.update(SQL_DELETE_CERTIFICATE_TAG, certificateId, tagId);
     }
 
     /**

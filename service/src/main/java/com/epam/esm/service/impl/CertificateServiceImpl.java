@@ -1,16 +1,22 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.converter.CertificateDtoConverter;
+import com.epam.esm.converter.TagDtoConverter;
 import com.epam.esm.dto.CertificateDto;
+import com.epam.esm.dto.TagDto;
 import com.epam.esm.entity.impl.Certificate;
+import com.epam.esm.entity.impl.Tag;
 import com.epam.esm.exception.DaoException;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.impl.CertificateRepository;
+import com.epam.esm.repository.impl.TagRepository;
 import com.epam.esm.service.CertificateService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
+import java.util.stream.Collectors;
 import static com.epam.esm.exception.message.ServiceExceptionMessage.ALREADY_EXISTS;
 import static com.epam.esm.exception.message.ServiceExceptionMessage.NOT_FOUND;
 
@@ -26,12 +32,18 @@ public class CertificateServiceImpl implements CertificateService {
 
     private final CertificateRepository certificateRepository;
     private final CertificateDtoConverter certificateDtoConverter;
+    private final TagRepository tagRepository;
+    private final TagDtoConverter tagDtoConverter;
 
     @Autowired
     public CertificateServiceImpl(CertificateRepository certificateRepository,
-                                  CertificateDtoConverter certificateDtoConverter) {
+                                  CertificateDtoConverter certificateDtoConverter,
+                                  TagRepository tagRepository,
+                                  TagDtoConverter tagDtoConverter) {
         this.certificateRepository = certificateRepository;
         this.certificateDtoConverter = certificateDtoConverter;
+        this.tagRepository = tagRepository;
+        this.tagDtoConverter = tagDtoConverter;
     }
 
     /**
@@ -74,9 +86,7 @@ public class CertificateServiceImpl implements CertificateService {
         } catch (DaoException e) {
             throw new ServiceException(ALREADY_EXISTS, e);
         }
-        //add values to tag-certificate cross table:
-        long id = savedCertificate.getId();
-        saveTag(id, certificateDto);
+        updateTags(certificateDto, savedCertificate.getId());
         log.info("Certificate has been saved {}", savedCertificate);
     }
 
@@ -88,15 +98,14 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public void update(CertificateDto certificateDto) throws ServiceException {
         final Certificate certificate = certificateDtoConverter.toUpdatedCertificate(certificateDto);
+        Certificate updatedCertificate;
         try {
-            Certificate updatedCertificate = certificateRepository.update(certificate);
-            //add values to tag-certificate cross table:
-            long id = updatedCertificate.getId();
-            saveTag(id, certificateDto);
-            log.info("Certificate has been updated {}", updatedCertificate);
+            updatedCertificate = certificateRepository.update(certificate);
         } catch (DaoException e) {
             throw new ServiceException(NOT_FOUND, e);
         }
+        updateTags(certificateDto, updatedCertificate.getId());
+        log.info("Certificate has been updated {}", updatedCertificate);
     }
 
     /**
@@ -114,9 +123,34 @@ public class CertificateServiceImpl implements CertificateService {
         }
     }
 
-    private void saveTag(long id, CertificateDto certificateDto) {
-        List<Long> tagIds = certificateDto.getTagIds();
-        tagIds.forEach(tagId -> certificateRepository.saveCertificateCrossTag(id, tagId));
+    private void updateTags(CertificateDto certificateDto, long id) {
+        List<TagDto> allTags = certificateDto.getTags();
+        List<Tag> newTags = saveTags(allTags);
+        if (newTags.size() > 0) {
+            saveCertificateCrossTag(id, newTags);
+        }
+        deleteCertificateCrossTag(id, allTags);
+    }
+
+    private List<Tag> saveTags(List<TagDto> tags) {
+        return tags.stream()
+                .filter(tag -> tag.getId() == null)
+                .map(tag ->
+                {
+                    Tag newTag = tagDtoConverter.toNewTag(tag);
+                    return tagRepository.save(newTag);
+                })
+                .collect(Collectors.toList());
+    }
+
+    private void deleteCertificateCrossTag(long id, List<TagDto> tags) {
+        tags.stream()
+                .filter(tag -> tag.getName().equals("deleted"))
+                .forEach(tag -> certificateRepository.deleteCertificateCrossTag(id, tag.getId()));
+    }
+
+    private void saveCertificateCrossTag(long id, List<Tag> tags) {
+        tags.forEach(tag -> certificateRepository.saveCertificateCrossTag(id, tag.getId()));
     }
 
 }
