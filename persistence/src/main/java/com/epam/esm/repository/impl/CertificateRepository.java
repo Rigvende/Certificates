@@ -38,9 +38,9 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
 
     @Autowired
     public CertificateRepository(CertificateMapper certificateMapper,
-                                 DataSource dataSource) {
+                                 JdbcTemplate jdbcTemplate) {
         this.rowMapper = certificateMapper;
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.jdbcTemplate = jdbcTemplate;
         this.tableName = "certificates";
         this.tableId = "id_certificate";
     }
@@ -73,7 +73,7 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
     }
 
     /**
-     * Method: save many-to-many connection between tag and certificate in the cross database table.
+     * Method: delete many-to-many connection between tag and certificate in the cross database table.
      * @param  certificateId: certificate id
      * @param tagId: tag id
      */

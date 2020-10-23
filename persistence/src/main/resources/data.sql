@@ -1,4 +1,4 @@
-insert into tags (name) values ('spa');
+insert into tags (name) values ('#spa');
 
 insert into certificates (name, price, create_date, duration) values
 ('Spa', 15.00, '2020-01-01', 72);

@@ -9,7 +9,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
-import javax.sql.DataSource;
 
 /**
  * Child class of {@link CrudRepository} interface
@@ -24,9 +23,9 @@ public class TagRepository extends AbstractRepository<Tag> {
     private final static String SQL_SAVE_TAG = "insert into tags (name) values (?);";
 
     @Autowired
-    public TagRepository(DataSource dataSource, TagMapper tagMapper) {
+    public TagRepository(JdbcTemplate jdbcTemplate, TagMapper tagMapper) {
         this.rowMapper = tagMapper;
-        this.jdbcTemplate = new JdbcTemplate(dataSource);
+        this.jdbcTemplate = jdbcTemplate;
         this.tableName = "tags";
         this.tableId = "id_tag";
     }
