@@ -18,12 +18,12 @@ public class AppInitializer extends AbstractAnnotationConfigDispatcherServletIni
 
     @Override
     protected Class<?>[] getRootConfigClasses() {
-        return new Class<?>[]{AppMvcConfig.class, DataSourceConfig.class};
+        return new Class<?>[]{WebMvcConfig.class, DataSourceConfig.class};
     }
 
     @Override
     protected Class<?>[] getServletConfigClasses() {
-        return new Class<?>[]{AppMvcConfig.class};
+        return new Class<?>[]{WebMvcConfig.class};
     }
 
     @Override
@@ -34,7 +34,7 @@ public class AppInitializer extends AbstractAnnotationConfigDispatcherServletIni
     @Override
     public void onStartup(ServletContext servletContext) {
         AnnotationConfigWebApplicationContext ctx = new AnnotationConfigWebApplicationContext();
-        ctx.register(AppMvcConfig.class);
+        ctx.register(WebMvcConfig.class);
 
         ServletRegistration.Dynamic servlet =
                 servletContext.addServlet("dispatcher", new DispatcherServlet(ctx));

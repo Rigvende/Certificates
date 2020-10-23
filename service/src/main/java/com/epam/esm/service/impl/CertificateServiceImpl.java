@@ -14,6 +14,7 @@ import com.epam.esm.service.CertificateService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +28,7 @@ import static com.epam.esm.exception.message.ServiceExceptionMessage.NOT_FOUND;
  * @version 1.0
  */
 @Service
+@Transactional
 @Slf4j
 public class CertificateServiceImpl implements CertificateService {
 
