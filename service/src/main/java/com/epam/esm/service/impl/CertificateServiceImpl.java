@@ -11,12 +11,10 @@ import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.impl.CertificateRepository;
 import com.epam.esm.repository.impl.TagRepository;
 import com.epam.esm.service.CertificateService;
-import com.epam.esm.util.NotNullFieldConsumer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.stream.Collectors;
 import static com.epam.esm.exception.message.ServiceExceptionMessage.ALREADY_EXISTS;
@@ -128,27 +126,23 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     private void updateTags(List<TagDto> allTags, Long id) {
-        List<Tag> newTags = saveTags(allTags);
+        List<Tag> newTags = saveNewTags(allTags);
         if (newTags.size() > 0) {
             saveCertificateCrossTag(id, newTags);
         }
         deleteCertificateCrossTag(id, allTags);
     }
 
-    private List<Tag> saveTags(List<TagDto> tags) {
+    private List<Tag> saveNewTags(List<TagDto> tags) {
         return tags.stream()
                 .filter(tag -> tag.getId() == null)
-                .map(tag ->
-                {
-                    Tag newTag = tagDtoConverter.toNewTag(tag);
-                    return tagRepository.save(newTag);
-                })
+                .map(tag -> tagRepository.save(tagDtoConverter.toNewTag(tag)))
                 .collect(Collectors.toList());
     }
 
     private void deleteCertificateCrossTag(Long id, List<TagDto> tags) {
         tags.stream()
-                .filter(tag -> tag.getName().equals("deleted"))
+                .filter(tag -> tag.getId() != null && tag.getName() == null)
                 .forEach(tag -> certificateRepository.deleteCertificateCrossTag(id, tag.getId()));
     }
 

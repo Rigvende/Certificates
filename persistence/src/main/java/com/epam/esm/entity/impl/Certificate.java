@@ -25,6 +25,6 @@ public class Certificate extends AbstractEntity {
     private BigDecimal price;
     private OffsetDateTime createDate;
     private OffsetDateTime lastUpdateDate;
-    private int duration;  //in days
+    private Integer duration;  //in days
 
 }

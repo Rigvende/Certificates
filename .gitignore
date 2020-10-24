@@ -13,3 +13,8 @@ log.log
 
 # production
 /build
+
+# misc
+service/src/main/java/com/epam/esm/Main.java
+web/src/main/java/com/epam/esm/Main.java
+persistence/src/main/java/com/epam/esm/Main.java
