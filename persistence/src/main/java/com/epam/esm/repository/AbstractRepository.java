@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
@@ -15,7 +15,7 @@ import java.util.List;
  * @version 1.0
  */
 @Slf4j
-@Component
+@Repository
 public abstract class AbstractRepository<T extends AbstractEntity> implements CrudRepository<T> {
 
     private final static String SQL_FIND_ONE = "SELECT * FROM %s";

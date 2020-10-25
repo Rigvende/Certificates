@@ -36,8 +36,11 @@ public class CertificateMapper implements RowMapper<Certificate> {
     }
 
     private OffsetDateTime timestampToOffset(Timestamp timestamp) {
-        LocalDateTime localDateTime = DateConverter.convertDateFromSqlTimestamp(timestamp);
-        return DateFormatter.formatDateToIso8601(localDateTime);
+        if (timestamp != null) {
+            LocalDateTime localDateTime = DateConverter.convertDateFromSqlTimestamp(timestamp);
+            return DateFormatter.formatDateToIso8601(localDateTime);
+        }
+        return null;
     }
 
 }

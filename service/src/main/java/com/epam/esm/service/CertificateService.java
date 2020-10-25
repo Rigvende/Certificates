@@ -3,6 +3,7 @@ package com.epam.esm.service;
 import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.entity.impl.Certificate;
 import com.epam.esm.exception.ServiceException;
+import org.springframework.stereotype.Service;
 import java.util.List;
 
 /**
@@ -10,6 +11,7 @@ import java.util.List;
  * @author Marianna Patrusova
  * @version 1.0
  */
+@Service
 public interface CertificateService {
 
     CertificateDto findById(Long id) throws ServiceException;

@@ -17,28 +17,26 @@ import java.util.List;
  */
 @RestController
 @RequestMapping(value = "/v1/certificates", produces = "application/json")
-public class CertificateController {
+public class CertificatesController {
 
     private final CertificateService certificateService;
 
     @Autowired
-    public CertificateController(CertificateService certificateService) {
+    public CertificatesController(CertificateService certificateService) {
         this.certificateService = certificateService;
     }
 
     @GetMapping
-    public ResponseEntity<List<CertificateDto>> findAll() {
+    public ResponseEntity<List<CertificateDto>> findAll(@RequestParam (required = false) String tagName) {
+        if (tagName != null) {
+            return ResponseEntity.ok(certificateService.findAllByTag(tagName));
+        }
         return ResponseEntity.ok(certificateService.findAll());
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<CertificateDto> findById(@PathVariable("id") Long id) throws ServiceException {
         return ResponseEntity.ok(certificateService.findById(id));
-    }
-
-    @GetMapping
-    public ResponseEntity<List<CertificateDto>> findAllByTag(@RequestParam String tagName) {
-        return ResponseEntity.ok(certificateService.findAllByTag(tagName));
     }
 
     @PostMapping(consumes = "application/json")

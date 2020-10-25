@@ -51,6 +51,7 @@ public class TagRepository extends AbstractRepository<Tag> {
      */
     @Override
     public Tag update(Tag tag) {
+        log.warn("Attempt to update tag {}", tag);
         throw new UnsupportedOperationException();
     }
 

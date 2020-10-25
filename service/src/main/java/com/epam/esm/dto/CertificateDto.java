@@ -25,8 +25,8 @@ public class CertificateDto {
     private String description;
     private BigDecimal price;
     private Integer duration;
-    private OffsetDateTime createDate;
-    private OffsetDateTime lastUpdateDate;
+    private String createDate;
+    private String lastUpdateDate;
     private List<TagDto> tags;
 
 }

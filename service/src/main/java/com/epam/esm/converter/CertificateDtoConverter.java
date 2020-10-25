@@ -29,8 +29,10 @@ public class CertificateDtoConverter {
         certificateDto.setDescription(certificate.getDescription());
         certificateDto.setPrice(certificate.getPrice());
         certificateDto.setDuration(certificate.getDuration());
-        certificateDto.setCreateDate(certificate.getCreateDate());
-        certificateDto.setLastUpdateDate(certificate.getLastUpdateDate());
+        certificateDto.setCreateDate(certificate.getCreateDate() == null ?
+                null : certificate.getCreateDate().toString());
+        certificateDto.setLastUpdateDate(certificate.getLastUpdateDate() == null ?
+                null : certificate.getLastUpdateDate().toString());
         return certificateDto;
     }
 

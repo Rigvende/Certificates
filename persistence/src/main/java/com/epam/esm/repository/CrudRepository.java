@@ -2,6 +2,7 @@ package com.epam.esm.repository;
 
 import com.epam.esm.entity.AbstractEntity;
 import com.epam.esm.exception.DaoException;
+import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
@@ -9,6 +10,7 @@ import java.util.List;
  * @author Marianna Patrusova
  * @version 1.0
  */
+@Repository
 public interface CrudRepository<T> {
 
     /**
