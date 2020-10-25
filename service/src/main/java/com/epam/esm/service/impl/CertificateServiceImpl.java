@@ -1,16 +1,22 @@
 package com.epam.esm.service.impl;
 
 import com.epam.esm.converter.CertificateDtoConverter;
+import com.epam.esm.converter.TagDtoConverter;
 import com.epam.esm.dto.CertificateDto;
+import com.epam.esm.dto.TagDto;
 import com.epam.esm.entity.impl.Certificate;
+import com.epam.esm.entity.impl.Tag;
 import com.epam.esm.exception.DaoException;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.impl.CertificateRepository;
+import com.epam.esm.repository.impl.TagRepository;
 import com.epam.esm.service.CertificateService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 import static com.epam.esm.exception.message.ServiceExceptionMessage.ALREADY_EXISTS;
 import static com.epam.esm.exception.message.ServiceExceptionMessage.NOT_FOUND;
 
@@ -21,17 +27,24 @@ import static com.epam.esm.exception.message.ServiceExceptionMessage.NOT_FOUND;
  * @version 1.0
  */
 @Service
+@Transactional
 @Slf4j
 public class CertificateServiceImpl implements CertificateService {
 
     private final CertificateRepository certificateRepository;
     private final CertificateDtoConverter certificateDtoConverter;
+    private final TagRepository tagRepository;
+    private final TagDtoConverter tagDtoConverter;
 
     @Autowired
     public CertificateServiceImpl(CertificateRepository certificateRepository,
-                                  CertificateDtoConverter certificateDtoConverter) {
+                                  CertificateDtoConverter certificateDtoConverter,
+                                  TagRepository tagRepository,
+                                  TagDtoConverter tagDtoConverter) {
         this.certificateRepository = certificateRepository;
         this.certificateDtoConverter = certificateDtoConverter;
+        this.tagRepository = tagRepository;
+        this.tagDtoConverter = tagDtoConverter;
     }
 
     /**
@@ -41,7 +54,7 @@ public class CertificateServiceImpl implements CertificateService {
      * @return instance of ({@link CertificateDto}
      */
     @Override
-    public CertificateDto findById(long id) throws ServiceException {
+    public CertificateDto findById(Long id) throws ServiceException {
         try {
             Certificate certificate = certificateRepository.findEntityById(id);
             return certificateDtoConverter.toResponseDto(certificate);
@@ -74,9 +87,7 @@ public class CertificateServiceImpl implements CertificateService {
         } catch (DaoException e) {
             throw new ServiceException(ALREADY_EXISTS, e);
         }
-        //add values to tag-certificate cross table:
-        long id = savedCertificate.getId();
-        saveTag(id, certificateDto);
+        updateTagList(certificateDto.getTags(), savedCertificate.getId());
         log.info("Certificate has been saved {}", savedCertificate);
     }
 
@@ -86,17 +97,17 @@ public class CertificateServiceImpl implements CertificateService {
      * @param certificateDto: instance of {@link CertificateDto}
      */
     @Override
-    public void update(CertificateDto certificateDto) throws ServiceException {
-        final Certificate certificate = certificateDtoConverter.toUpdatedCertificate(certificateDto);
+    public void update(Long id, CertificateDto certificateDto) throws ServiceException {
+        Certificate certificate = certificateRepository.findEntityById(id);
+        certificate = certificateDtoConverter.toUpdatedCertificate(certificate, certificateDto);
+        Certificate updatedCertificate;
         try {
-            Certificate updatedCertificate = certificateRepository.update(certificate);
-            //add values to tag-certificate cross table:
-            long id = updatedCertificate.getId();
-            saveTag(id, certificateDto);
-            log.info("Certificate has been updated {}", updatedCertificate);
+            updatedCertificate = certificateRepository.update(certificate);
         } catch (DaoException e) {
             throw new ServiceException(NOT_FOUND, e);
         }
+        updateTagList(certificateDto.getTags(), id);
+        log.info("Certificate has been updated {}", updatedCertificate);
     }
 
     /**
@@ -105,7 +116,7 @@ public class CertificateServiceImpl implements CertificateService {
      * @param id: certificate id
      */
     @Override
-    public void delete(long id) throws ServiceException {
+    public void delete(Long id) throws ServiceException {
         try {
             certificateRepository.delete(id);
             log.info("Certificate has been deleted {}", id);
@@ -114,9 +125,58 @@ public class CertificateServiceImpl implements CertificateService {
         }
     }
 
-    private void saveTag(long id, CertificateDto certificateDto) {
-        List<Long> tagIds = certificateDto.getTagIds();
-        tagIds.forEach(tagId -> certificateRepository.saveTag(id, tagId));
+    /**
+     * Method: find all certificates by related tag name.
+     * @param  tagName: tag name
+     * @return list of {@link CertificateDto}
+     */
+    @Override
+    public List<CertificateDto> findAllByTag(String tagName) {
+        final List<Certificate> certificates = certificateRepository.findAllByTag(tagName);
+        return certificateDtoConverter.toResponseDtoList(certificates);
+    }
+
+    //method for tags manipulations during creating/modifying a certificate
+    private void updateTagList(List<TagDto> tagDtoList, Long id) {
+        //save new tags if not exists:
+        List<Tag> newTags = saveNewUniqueTags(tagDtoList);
+        //create links between certificate & new tag:
+        if (newTags.size() > 0) {
+            saveCertificateTagLink(id, newTags);
+        }
+        //create link between certificate & old tag if link not exists
+        List<Tag> unlinkedTags = findTagsWithoutLinks(tagDtoList);
+        if (unlinkedTags.size() > 0) {
+            saveCertificateTagLink(id, unlinkedTags);
+        }
+        //delete link between certificate and non-implemented tag
+        deleteCertificateTagLink(id, tagDtoList);
+    }
+
+    private List<Tag> saveNewUniqueTags(List<TagDto> tags) {
+        return tags.stream()
+                .filter(tag -> tag.getStatus().equals(TagDto.TagStatus.NEW)
+                        && tagRepository.findByName(tag.getName()) == null)
+                .map(tag -> tagRepository.save(tagDtoConverter.toNewTag(tag)))
+                .collect(Collectors.toList());
+    }
+
+    private void saveCertificateTagLink(Long id, List<Tag> tags) {
+        tags.forEach(tag -> certificateRepository.saveCertificateTagLink(id, tag.getId()));
+    }
+
+    private List<Tag> findTagsWithoutLinks(List<TagDto> tags) {
+        return tags.stream()
+                .filter(tag -> (tag.getStatus().equals(TagDto.TagStatus.NEW))
+                        && tagRepository.findByName(tag.getName()) != null)
+                .map(tag -> tagRepository.findByName(tag.getName()))
+                .collect(Collectors.toList());
+    }
+
+    private void deleteCertificateTagLink(Long id, List<TagDto> tags) {
+        tags.stream()
+                .filter(tag -> tag.getStatus().equals(TagDto.TagStatus.DELETED))
+                .forEach(tag -> certificateRepository.deleteCertificateTagLink(id, tag.getId()));
     }
 
 }

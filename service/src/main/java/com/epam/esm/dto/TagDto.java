@@ -19,5 +19,10 @@ public class TagDto {
 
     private Long id;
     private String name;
+    private TagStatus status;
+
+    public enum TagStatus {
+        NEW, DELETED, PRESENT
+    }
 
 }

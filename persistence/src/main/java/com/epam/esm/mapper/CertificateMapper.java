@@ -2,10 +2,14 @@ package com.epam.esm.mapper;
 
 import com.epam.esm.entity.impl.Certificate;
 import com.epam.esm.util.DateConverter;
+import com.epam.esm.util.DateFormatter;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Component;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 /**
  * Class for mapping table row to {@link Certificate} instance
@@ -23,11 +27,17 @@ public class CertificateMapper implements RowMapper<Certificate> {
      */
     @Override
     public Certificate mapRow(ResultSet resultSet, int i) throws SQLException {
-        return new Certificate(resultSet.getLong("id_certificate"), resultSet.getString("name"),
-                resultSet.getString("description"), resultSet.getBigDecimal("price"),
-                DateConverter.convertDateFromSqlTimestamp(resultSet.getTimestamp("create_date")),
-                DateConverter.convertDateFromSqlTimestamp(resultSet.getTimestamp("last_update_date")),
+        return new Certificate(resultSet.getLong("id_certificate"),
+                resultSet.getString("name"), resultSet.getString("description"),
+                resultSet.getBigDecimal("price"),
+                timestampToOffset(resultSet.getTimestamp("create_date")),
+                timestampToOffset(resultSet.getTimestamp("last_update_date")),
                 resultSet.getInt("duration"));
+    }
+
+    private OffsetDateTime timestampToOffset(Timestamp timestamp) {
+        LocalDateTime localDateTime = DateConverter.convertDateFromSqlTimestamp(timestamp);
+        return DateFormatter.formatDateToIso8601(localDateTime);
     }
 
 }

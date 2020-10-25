@@ -2,8 +2,9 @@ package com.epam.esm.converter;
 
 import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.entity.impl.Certificate;
+import com.epam.esm.util.NotNullFieldConsumer;
 import org.springframework.stereotype.Component;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,24 +58,23 @@ public class CertificateDtoConverter {
                 .description(certificateDto.getDescription())
                 .price(certificateDto.getPrice())
                 .duration(certificateDto.getDuration())
-                .createDate(LocalDateTime.now())
+                .createDate(OffsetDateTime.now())
                 .build();
     }
 
     /**
-     * Method: convert certificate DTO to updated certificate
+     * Method: use certificate DTO to update fields of existing certificate
+     * @param certificate: instance of {@link Certificate}
      * @param certificateDto: instance of {@link CertificateDto}
-     * @return instance of {@link Certificate}
+     * @return updated certificate
      */
-    public Certificate toUpdatedCertificate(CertificateDto certificateDto) {
-        return Certificate.builder()
-                .id(certificateDto.getId())
-                .name(certificateDto.getName())
-                .description(certificateDto.getDescription())
-                .price(certificateDto.getPrice())
-                .duration(certificateDto.getDuration())
-                .lastUpdateDate(LocalDateTime.now())
-                .build();
+    public Certificate toUpdatedCertificate(Certificate certificate, CertificateDto certificateDto) {
+        NotNullFieldConsumer.changeIfPresent(certificateDto.getName(), certificate::setName);
+        NotNullFieldConsumer.changeIfPresent(certificateDto.getDescription(), certificate::setDescription);
+        NotNullFieldConsumer.changeIfPresent(certificateDto.getPrice(), certificate::setPrice);
+        NotNullFieldConsumer.changeIfPresent(certificateDto.getDuration(), certificate::setDuration);
+        certificate.setLastUpdateDate(OffsetDateTime.now());
+        return certificate;
     }
 
 }

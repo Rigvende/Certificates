@@ -10,6 +10,7 @@ import com.epam.esm.service.TagService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import static com.epam.esm.exception.message.ServiceExceptionMessage.*;
 
@@ -21,6 +22,7 @@ import static com.epam.esm.exception.message.ServiceExceptionMessage.*;
  */
 @Service
 @Slf4j
+@Transactional
 public class TagServiceImpl implements TagService {
 
     private final TagRepository tagRepository;
@@ -39,7 +41,7 @@ public class TagServiceImpl implements TagService {
      * @return instance of ({@link TagDto}
      */
     @Override
-    public TagDto findById(long id) throws ServiceException {
+    public TagDto findById(Long id) throws ServiceException {
         try {
             Tag tag = tagRepository.findEntityById(id);
             return tagDtoConverter.toResponseDto(tag);
@@ -81,7 +83,7 @@ public class TagServiceImpl implements TagService {
      * @param id: tag id
      */
     @Override
-    public void delete(long id) throws ServiceException {
+    public void delete(Long id) throws ServiceException {
         try {
             tagRepository.delete(id);
             log.info("Tag has been deleted {}", id);
