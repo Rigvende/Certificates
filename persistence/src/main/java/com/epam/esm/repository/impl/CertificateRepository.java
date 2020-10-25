@@ -86,7 +86,7 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
      * @param  certificateId: certificate id
      * @param tagId: tag id
      */
-    public void saveCertificateCrossTag(long certificateId, long tagId) {
+    public void saveCertificateTagLink(long certificateId, long tagId) {
         jdbcTemplate.update(SQL_SAVE_CERTIFICATE_TAG, certificateId, tagId);
     }
 
@@ -95,7 +95,7 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
      * @param  certificateId: certificate id
      * @param tagId: tag id
      */
-    public void deleteCertificateCrossTag(long certificateId, long tagId) {
+    public void deleteCertificateTagLink(long certificateId, long tagId) {
         jdbcTemplate.update(SQL_DELETE_CERTIFICATE_TAG, certificateId, tagId);
     }
 

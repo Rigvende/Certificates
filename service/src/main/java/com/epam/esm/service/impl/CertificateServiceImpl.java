@@ -87,7 +87,7 @@ public class CertificateServiceImpl implements CertificateService {
         } catch (DaoException e) {
             throw new ServiceException(ALREADY_EXISTS, e);
         }
-        updateTags(certificateDto.getTags(), savedCertificate.getId());
+        updateTagList(certificateDto.getTags(), savedCertificate.getId());
         log.info("Certificate has been saved {}", savedCertificate);
     }
 
@@ -106,7 +106,7 @@ public class CertificateServiceImpl implements CertificateService {
         } catch (DaoException e) {
             throw new ServiceException(NOT_FOUND, e);
         }
-        updateTags(certificateDto.getTags(), id);
+        updateTagList(certificateDto.getTags(), id);
         log.info("Certificate has been updated {}", updatedCertificate);
     }
 
@@ -125,29 +125,47 @@ public class CertificateServiceImpl implements CertificateService {
         }
     }
 
-    private void updateTags(List<TagDto> allTags, Long id) {
-        List<Tag> newTags = saveNewTags(allTags);
+    //method for tags manipulations during creating/modifying a certificate
+    private void updateTagList(List<TagDto> tagDtoList, Long id) {
+        //save new tags if not exists:
+        List<Tag> newTags = saveNewUniqueTags(tagDtoList);
+        //create links between certificate & new tag:
         if (newTags.size() > 0) {
-            saveCertificateCrossTag(id, newTags);
+            saveCertificateTagLink(id, newTags);
         }
-        deleteCertificateCrossTag(id, allTags);
+        //create link between certificate & old tag if link not exists
+        List<Tag> unlinkedTags = findTagsWithoutLinks(tagDtoList);
+        if (unlinkedTags.size() > 0) {
+            saveCertificateTagLink(id, unlinkedTags);
+        }
+        //delete link between certificate and non-implemented tag
+        deleteCertificateTagLink(id, tagDtoList);
     }
 
-    private List<Tag> saveNewTags(List<TagDto> tags) {
+    private List<Tag> saveNewUniqueTags(List<TagDto> tags) {
         return tags.stream()
-                .filter(tag -> tag.getId() == null)
+                .filter(tag -> tag.getStatus().equals(TagDto.TagStatus.NEW)
+                        && tagRepository.findByName(tag.getName()) == null)
                 .map(tag -> tagRepository.save(tagDtoConverter.toNewTag(tag)))
                 .collect(Collectors.toList());
     }
 
-    private void deleteCertificateCrossTag(Long id, List<TagDto> tags) {
-        tags.stream()
-                .filter(tag -> tag.getId() != null && tag.getName() == null)
-                .forEach(tag -> certificateRepository.deleteCertificateCrossTag(id, tag.getId()));
+    private List<Tag> findTagsWithoutLinks(List<TagDto> tags) {
+        return tags.stream()
+                .filter(tag -> (tag.getStatus().equals(TagDto.TagStatus.NEW))
+                        && tagRepository.findByName(tag.getName()) != null)
+                .map(tag -> tagRepository.findByName(tag.getName()))
+                .collect(Collectors.toList());
     }
 
-    private void saveCertificateCrossTag(Long id, List<Tag> tags) {
-        tags.forEach(tag -> certificateRepository.saveCertificateCrossTag(id, tag.getId()));
+    private void deleteCertificateTagLink(Long id, List<TagDto> tags) {
+        tags.stream()
+                .filter(tag -> tag.getStatus().equals(TagDto.TagStatus.DELETED))
+                .forEach(tag -> certificateRepository.deleteCertificateTagLink(id, tag.getId()));
+    }
+
+    private void saveCertificateTagLink(Long id, List<Tag> tags) {
+        tags.forEach(tag -> certificateRepository.saveCertificateTagLink(id, tag.getId()));
     }
 
 }

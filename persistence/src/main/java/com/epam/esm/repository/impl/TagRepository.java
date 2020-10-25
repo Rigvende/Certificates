@@ -21,6 +21,7 @@ import org.springframework.stereotype.Repository;
 public class TagRepository extends AbstractRepository<Tag> {
 
     private final static String SQL_SAVE_TAG = "insert into tags (name) values (?);";
+    private final static String SQL_FIND_TAG_BY_NAME = "select id, name from tags where name = ?;";
 
     @Autowired
     public TagRepository(JdbcTemplate jdbcTemplate, TagMapper tagMapper) {
@@ -51,6 +52,10 @@ public class TagRepository extends AbstractRepository<Tag> {
     @Override
     public Tag update(Tag tag) {
         throw new UnsupportedOperationException();
+    }
+
+    public Tag findByName(String name) {
+        return jdbcTemplate.queryForObject(SQL_FIND_TAG_BY_NAME, new Object[]{name}, rowMapper);
     }
 
 }

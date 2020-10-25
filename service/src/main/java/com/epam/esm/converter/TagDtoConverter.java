@@ -24,6 +24,7 @@ public class TagDtoConverter {
         TagDto tagDto = new TagDto();
         tagDto.setId(tag.getId());
         tagDto.setName(tag.getName());
+        tagDto.setStatus(TagDto.TagStatus.PRESENT);
         return tagDto;
     }
 
