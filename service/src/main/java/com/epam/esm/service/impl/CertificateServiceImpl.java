@@ -125,6 +125,17 @@ public class CertificateServiceImpl implements CertificateService {
         }
     }
 
+    /**
+     * Method: find all certificates by related tag name.
+     * @param  tagName: tag name
+     * @return list of {@link CertificateDto}
+     */
+    @Override
+    public List<CertificateDto> findAllByTag(String tagName) {
+        final List<Certificate> certificates = certificateRepository.findAllByTag(tagName);
+        return certificateDtoConverter.toResponseDtoList(certificates);
+    }
+
     //method for tags manipulations during creating/modifying a certificate
     private void updateTagList(List<TagDto> tagDtoList, Long id) {
         //save new tags if not exists:
@@ -150,6 +161,10 @@ public class CertificateServiceImpl implements CertificateService {
                 .collect(Collectors.toList());
     }
 
+    private void saveCertificateTagLink(Long id, List<Tag> tags) {
+        tags.forEach(tag -> certificateRepository.saveCertificateTagLink(id, tag.getId()));
+    }
+
     private List<Tag> findTagsWithoutLinks(List<TagDto> tags) {
         return tags.stream()
                 .filter(tag -> (tag.getStatus().equals(TagDto.TagStatus.NEW))
@@ -162,10 +177,6 @@ public class CertificateServiceImpl implements CertificateService {
         tags.stream()
                 .filter(tag -> tag.getStatus().equals(TagDto.TagStatus.DELETED))
                 .forEach(tag -> certificateRepository.deleteCertificateTagLink(id, tag.getId()));
-    }
-
-    private void saveCertificateTagLink(Long id, List<Tag> tags) {
-        tags.forEach(tag -> certificateRepository.saveCertificateTagLink(id, tag.getId()));
     }
 
 }

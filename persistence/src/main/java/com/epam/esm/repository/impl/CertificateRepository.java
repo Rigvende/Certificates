@@ -14,6 +14,7 @@ import org.springframework.stereotype.Repository;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 /**
  * Child class of {@link CrudRepository} interface
@@ -34,7 +35,10 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
             "insert into certificate_tag (id_certificate, id_tag) values (?, ?);";
     private final static String SQL_DELETE_CERTIFICATE_TAG =
             "delete from certificate_tag where id_tag = ? and id_certificate = ?";
-
+    private final static String SQL_FIND_BY_TAG =
+            "select c.id_certificate, c.name, c.description, c.price, c.create_date, c.last_update_date, c.duration " +
+                    "from certificates c join certificate_tag ct on c.id_certificate = ct.id_certificate " +
+                    "join tags t on ct.id_tag = t.id_tag where t.name = ?;";
 
     @Autowired
     public CertificateRepository(CertificateMapper certificateMapper,
@@ -97,6 +101,15 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
      */
     public void deleteCertificateTagLink(long certificateId, long tagId) {
         jdbcTemplate.update(SQL_DELETE_CERTIFICATE_TAG, certificateId, tagId);
+    }
+
+    /**
+     * Method: find all certificates by related tag name in database.
+     * @param  tagName: tag name
+     * @return list of {@link Certificate}
+     */
+    public List<Certificate> findAllByTag(String tagName) {
+        return jdbcTemplate.query(SQL_FIND_BY_TAG, new Object[]{tagName}, rowMapper);
     }
 
     private Timestamp offsetToTimestamp(OffsetDateTime offsetDateTime) {

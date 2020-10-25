@@ -36,6 +36,11 @@ public class CertificateController {
         return ResponseEntity.ok(certificateService.findById(id));
     }
 
+    @GetMapping
+    public ResponseEntity<List<CertificateDto>> findAllByTag(@RequestParam String tagName) {
+        return ResponseEntity.ok(certificateService.findAllByTag(tagName));
+    }
+
     @PostMapping(consumes = "application/json")
     public ResponseEntity<String> save(@RequestBody CertificateDto certificateDto) throws ServiceException {
         certificateService.save(certificateDto);

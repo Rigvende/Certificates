@@ -22,4 +22,6 @@ public interface CertificateService {
 
     void delete(Long id) throws ServiceException;
 
+    List<CertificateDto> findAllByTag(String tagName);
+
 }
