@@ -21,7 +21,7 @@ public abstract class AbstractRepository<T extends AbstractEntity> implements Cr
     private final static String SQL_FIND_ONE = "SELECT * FROM %s WHERE %s = ?";
     private final static String SQL_FIND_ALL = "SELECT * FROM %s";
     private final static String SQL_DELETE_ONE = "DELETE FROM %s WHERE %s = ?";
-    private final static String SQL_FIND_ALL_SORTED = "SELECT * FROM %s ORDER BY ? ?";
+    private final static String SQL_FIND_ALL_SORTED = "SELECT * FROM %s ORDER BY %s %s";
     protected RowMapper<T> rowMapper;
     protected JdbcTemplate jdbcTemplate;
     protected String tableName;
@@ -43,8 +43,7 @@ public abstract class AbstractRepository<T extends AbstractEntity> implements Cr
      * @return list of {@link AbstractEntity} child instances
      */
     public List<T> findAllSorted(String direction, String column) {
-        return jdbcTemplate.query(String.format(SQL_FIND_ALL_SORTED, tableName),
-                new Object[] {direction, column}, rowMapper);
+        return jdbcTemplate.query(String.format(SQL_FIND_ALL_SORTED, tableName, column, direction), rowMapper);
     }
 
     /**

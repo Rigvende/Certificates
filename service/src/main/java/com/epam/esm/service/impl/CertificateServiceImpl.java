@@ -139,6 +139,12 @@ public class CertificateServiceImpl implements CertificateService {
         return certificateDtoConverter.toResponseDtoList(certificates);
     }
 
+    /**
+     * Method: find all certificates sorted by parameters
+     * @param  direction: sort direction
+     * @param column: sort column
+     * @return list of {@link CertificateDto}
+     */
     @Override
     public List<CertificateDto> findAllSorted(String direction, String column) {
         final List<Certificate> certificates = certificateRepository.findAllSorted(direction, column);
