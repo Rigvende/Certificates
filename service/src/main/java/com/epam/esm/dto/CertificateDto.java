@@ -6,7 +6,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
-import java.time.OffsetDateTime;
 import java.util.List;
 
 /**
@@ -25,8 +24,8 @@ public class CertificateDto {
     private String description;
     private BigDecimal price;
     private Integer duration;
-    private OffsetDateTime createDate;
-    private OffsetDateTime lastUpdateDate;
+    private String createDate;
+    private String lastUpdateDate;
     private List<TagDto> tags;
 
 }

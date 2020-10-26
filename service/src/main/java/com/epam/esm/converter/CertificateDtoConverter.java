@@ -3,6 +3,7 @@ package com.epam.esm.converter;
 import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.entity.impl.Certificate;
 import com.epam.esm.util.NotNullFieldConsumer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -17,6 +18,13 @@ import java.util.List;
 @Component
 public class CertificateDtoConverter {
 
+    private final TagDtoConverter tagDtoConverter;
+
+    @Autowired
+    public CertificateDtoConverter(TagDtoConverter tagDtoConverter) {
+        this.tagDtoConverter = tagDtoConverter;
+    }
+
     /**
      * Method: convert certificate to its DTO
      * @param certificate: instance of {@link Certificate}
@@ -29,8 +37,11 @@ public class CertificateDtoConverter {
         certificateDto.setDescription(certificate.getDescription());
         certificateDto.setPrice(certificate.getPrice());
         certificateDto.setDuration(certificate.getDuration());
-        certificateDto.setCreateDate(certificate.getCreateDate());
-        certificateDto.setLastUpdateDate(certificate.getLastUpdateDate());
+        certificateDto.setCreateDate(certificate.getCreateDate() == null ?
+                null : certificate.getCreateDate().toString());
+        certificateDto.setLastUpdateDate(certificate.getLastUpdateDate() == null ?
+                null : certificate.getLastUpdateDate().toString());
+        certificateDto.setTags(tagDtoConverter.toResponseDtoList(certificate.getTagList()));
         return certificateDto;
     }
 
@@ -41,8 +52,10 @@ public class CertificateDtoConverter {
      */
     public List<CertificateDto> toResponseDtoList(List<Certificate> certificates) {
         List<CertificateDto> certificateDtos = new ArrayList<>();
-        for (Certificate certificate: certificates) {
-            certificateDtos.add(toResponseDto(certificate));
+        if (certificates != null) {
+            for (Certificate certificate : certificates) {
+                certificateDtos.add(toResponseDto(certificate));
+            }
         }
         return certificateDtos;
     }

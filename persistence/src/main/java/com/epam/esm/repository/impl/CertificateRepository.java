@@ -7,7 +7,6 @@ import com.epam.esm.repository.AbstractRepository;
 import com.epam.esm.repository.CrudRepository;
 import com.epam.esm.util.DateConverter;
 import com.epam.esm.util.DateFormatter;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
@@ -22,7 +21,6 @@ import java.util.List;
  * @author Marianna Patrusova
  * @version 1.0
  */
-@Slf4j
 @Repository
 public class CertificateRepository extends AbstractRepository<Certificate> {
 
