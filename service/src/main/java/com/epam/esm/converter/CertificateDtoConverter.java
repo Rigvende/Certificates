@@ -1,7 +1,6 @@
 package com.epam.esm.converter;
 
 import com.epam.esm.dto.CertificateDto;
-import com.epam.esm.dto.TagDto;
 import com.epam.esm.entity.impl.Certificate;
 import com.epam.esm.util.NotNullFieldConsumer;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -53,8 +52,10 @@ public class CertificateDtoConverter {
      */
     public List<CertificateDto> toResponseDtoList(List<Certificate> certificates) {
         List<CertificateDto> certificateDtos = new ArrayList<>();
-        for (Certificate certificate: certificates) {
-            certificateDtos.add(toResponseDto(certificate));
+        if (certificates != null) {
+            for (Certificate certificate : certificates) {
+                certificateDtos.add(toResponseDto(certificate));
+            }
         }
         return certificateDtos;
     }

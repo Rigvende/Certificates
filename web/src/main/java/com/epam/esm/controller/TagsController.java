@@ -17,7 +17,6 @@ import static com.epam.esm.error.ErrorMessage.*;
 /**
  * Class-controller for REST-operations with {@link Tag} entity
  * Provides endpoints for CRD and search operations
- *
  * @author Marianna Patrusova
  * @version 1.0
  */

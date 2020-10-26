@@ -139,6 +139,13 @@ public class CertificateServiceImpl implements CertificateService {
         return certificateDtoConverter.toResponseDtoList(certificates);
     }
 
+    @Override
+    public List<CertificateDto> findAllSorted(String direction, String column) {
+        final List<Certificate> certificates = certificateRepository.findAllSorted(direction, column);
+        certificates.forEach(this::setTags);
+        return certificateDtoConverter.toResponseDtoList(certificates);
+    }
+
     //method for tags manipulations during creating/modifying a certificate
     private void updateTagList(List<TagDto> tagDtoList, Long id) {
         //save new tags if not exists:

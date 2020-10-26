@@ -2,12 +2,15 @@ package com.epam.esm.controller;
 
 import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.entity.impl.Certificate;
+import com.epam.esm.error.CustomError;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.service.CertificateService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+import static com.epam.esm.error.ErrorMessage.*;
 
 /**
  * Class-controller for REST-operations with {@link Certificate} entity
@@ -27,35 +30,61 @@ public class CertificatesController {
     }
 
     @GetMapping
-    public ResponseEntity<List<CertificateDto>> findAll(@RequestParam (required = false) String tagName) {
+    public ResponseEntity<List<CertificateDto>> findAll(@RequestParam(required = false) String tagName,
+                                                        @RequestParam(required = false) String direction,
+                                                        @RequestParam(required = false) String column) {
         if (tagName != null) {
             return ResponseEntity.ok(certificateService.findAllByTag(tagName));
+        } else if (direction != null && column != null) {
+            return ResponseEntity.ok(certificateService.findAllSorted(direction, column));
+        } else {
+            return ResponseEntity.ok(certificateService.findAll());
         }
-        return ResponseEntity.ok(certificateService.findAll());
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<CertificateDto> findById(@PathVariable("id") Long id) throws ServiceException {
-        return ResponseEntity.ok(certificateService.findById(id));
+    public ResponseEntity<?> findById(@PathVariable("id") Long id) {
+        try {
+            CertificateDto certificateDto = certificateService.findById(id);
+            return ResponseEntity.ok(certificateDto);
+        } catch (ServiceException e) {
+            CustomError error = new CustomError(40402, ERROR_404_CERTIFICATE);
+            return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<String> save(@RequestBody CertificateDto certificateDto) throws ServiceException {
-        certificateService.save(certificateDto);
-        return ResponseEntity.ok("Certificate has been saved");
+    public ResponseEntity<?> save(@RequestBody CertificateDto certificateDto) {
+        try {
+            certificateService.save(certificateDto);
+            return ResponseEntity.ok("Certificate has been saved");
+        } catch (ServiceException e) {
+            CustomError error = new CustomError(50002, ERROR_500_CERTIFICATE);
+            return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @PatchMapping(path = "/{id}", consumes = "application/json")
-    public ResponseEntity<String> update(@PathVariable("id") Long id,
-                                         @RequestBody CertificateDto certificateDto) throws ServiceException {
-        certificateService.update(id, certificateDto);
-        return ResponseEntity.ok("Certificate has been updated");
+    public ResponseEntity<?> update(@PathVariable("id") Long id,
+                                         @RequestBody CertificateDto certificateDto) {
+        try {
+            certificateService.update(id, certificateDto);
+            return ResponseEntity.ok("Certificate has been updated");
+        } catch (ServiceException e) {
+            CustomError error = new CustomError(50002, ERROR_500_CERTIFICATE);
+            return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") Long id) throws ServiceException {
-        certificateService.delete(id);
-        return ResponseEntity.ok("Certificate has been deleted");
+    public ResponseEntity<?> delete(@PathVariable("id") Long id) {
+        try {
+            certificateService.delete(id);
+            return ResponseEntity.ok("Certificate has been deleted");
+        } catch (ServiceException e) {
+            CustomError error = new CustomError(40402, ERROR_404_CERTIFICATE);
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+        }
     }
 
 }

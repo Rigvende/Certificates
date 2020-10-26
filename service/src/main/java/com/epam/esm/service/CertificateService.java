@@ -14,16 +14,18 @@ import java.util.List;
 @Service
 public interface CertificateService {
 
-    CertificateDto findById(Long id) throws ServiceException;
-
-    List<CertificateDto> findAll();
-
     void save(CertificateDto certificateDto) throws ServiceException;
 
     void update(Long id, CertificateDto certificateDto) throws ServiceException;
 
     void delete(Long id) throws ServiceException;
 
+    CertificateDto findById(Long id) throws ServiceException;
+
+    List<CertificateDto> findAll();
+
     List<CertificateDto> findAllByTag(String tagName);
+
+    List<CertificateDto> findAllSorted(String direction, String column);
 
 }
