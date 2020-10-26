@@ -32,7 +32,7 @@ public class CertificateMapper implements RowMapper<Certificate> {
                 resultSet.getBigDecimal("price"),
                 timestampToOffset(resultSet.getTimestamp("create_date")),
                 timestampToOffset(resultSet.getTimestamp("last_update_date")),
-                resultSet.getInt("duration"));
+                resultSet.getInt("duration"), null);
     }
 
     private OffsetDateTime timestampToOffset(Timestamp timestamp) {

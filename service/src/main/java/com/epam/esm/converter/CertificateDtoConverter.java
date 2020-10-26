@@ -1,8 +1,10 @@
 package com.epam.esm.converter;
 
 import com.epam.esm.dto.CertificateDto;
+import com.epam.esm.dto.TagDto;
 import com.epam.esm.entity.impl.Certificate;
 import com.epam.esm.util.NotNullFieldConsumer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
@@ -16,6 +18,13 @@ import java.util.List;
  */
 @Component
 public class CertificateDtoConverter {
+
+    private final TagDtoConverter tagDtoConverter;
+
+    @Autowired
+    public CertificateDtoConverter(TagDtoConverter tagDtoConverter) {
+        this.tagDtoConverter = tagDtoConverter;
+    }
 
     /**
      * Method: convert certificate to its DTO
@@ -33,6 +42,7 @@ public class CertificateDtoConverter {
                 null : certificate.getCreateDate().toString());
         certificateDto.setLastUpdateDate(certificate.getLastUpdateDate() == null ?
                 null : certificate.getLastUpdateDate().toString());
+        certificateDto.setTags(tagDtoConverter.toResponseDtoList(certificate.getTagList()));
         return certificateDto;
     }
 

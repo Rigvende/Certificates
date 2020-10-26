@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 /**
  * Child class of {@link CrudRepository} interface
  * Provides CRD and search operations for Tag entities
@@ -22,6 +24,8 @@ public class TagRepository extends AbstractRepository<Tag> {
 
     private final static String SQL_SAVE_TAG = "insert into tags (name) values (?);";
     private final static String SQL_FIND_TAG_BY_NAME = "select id, name from tags where name = ?;";
+    private final static String SQL_FIND_BY_CERTIFICATE = "select t.id_tag, t.name from tags t join certificate_tag ct " +
+            "on t.id_tag = ct.id_tag where ct.id_certificate = ?;";
 
     @Autowired
     public TagRepository(JdbcTemplate jdbcTemplate, TagMapper tagMapper) {
@@ -57,6 +61,10 @@ public class TagRepository extends AbstractRepository<Tag> {
 
     public Tag findByName(String name) {
         return jdbcTemplate.queryForObject(SQL_FIND_TAG_BY_NAME, new Object[]{name}, rowMapper);
+    }
+
+    public List<Tag> findAllByCertificate(Long id) {
+        return jdbcTemplate.query(SQL_FIND_BY_CERTIFICATE, new Object[]{id}, rowMapper);
     }
 
 }

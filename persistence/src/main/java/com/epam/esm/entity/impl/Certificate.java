@@ -5,6 +5,7 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
+import java.util.List;
 
 /**
  * Class for certificate entity
@@ -26,5 +27,6 @@ public class Certificate extends AbstractEntity {
     private OffsetDateTime createDate;
     private OffsetDateTime lastUpdateDate;
     private Integer duration;  //in days
+    private List<Tag> tagList;
 
 }

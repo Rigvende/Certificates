@@ -57,6 +57,7 @@ public class CertificateServiceImpl implements CertificateService {
     public CertificateDto findById(Long id) throws ServiceException {
         try {
             Certificate certificate = certificateRepository.findEntityById(id);
+            setTags(certificate);
             return certificateDtoConverter.toResponseDto(certificate);
         } catch (DaoException e) {
             throw new ServiceException(NOT_FOUND, e);
@@ -70,6 +71,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public List<CertificateDto> findAll() {
         final List<Certificate> certificates = certificateRepository.findAll();
+        certificates.forEach(this::setTags);
         return certificateDtoConverter.toResponseDtoList(certificates);
     }
 
@@ -133,6 +135,7 @@ public class CertificateServiceImpl implements CertificateService {
     @Override
     public List<CertificateDto> findAllByTag(String tagName) {
         final List<Certificate> certificates = certificateRepository.findAllByTag(tagName);
+        certificates.forEach(this::setTags);
         return certificateDtoConverter.toResponseDtoList(certificates);
     }
 
@@ -177,6 +180,11 @@ public class CertificateServiceImpl implements CertificateService {
         tags.stream()
                 .filter(tag -> tag.getStatus().equals(TagDto.TagStatus.DELETED))
                 .forEach(tag -> certificateRepository.deleteCertificateTagLink(id, tag.getId()));
+    }
+
+    private void setTags(Certificate certificate) {
+        List<Tag> tags = tagRepository.findAllByCertificate(certificate.getId());
+        certificate.setTagList(tags);
     }
 
 }

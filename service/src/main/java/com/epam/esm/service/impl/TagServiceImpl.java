@@ -46,6 +46,7 @@ public class TagServiceImpl implements TagService {
             Tag tag = tagRepository.findEntityById(id);
             return tagDtoConverter.toResponseDto(tag);
         } catch (DaoException e) {
+            log.error(NOT_FOUND + ": tag " + id);
             throw new ServiceException(NOT_FOUND, e);
         }
     }
@@ -72,6 +73,7 @@ public class TagServiceImpl implements TagService {
         try {
             savedTag = tagRepository.save(tag);
         } catch (DaoException e) {
+            log.error(ALREADY_EXISTS + ": tag " + tagDto.getName());
             throw new ServiceException(ALREADY_EXISTS, e);
         }
         log.info("Tag has been saved {}", savedTag);
@@ -88,6 +90,7 @@ public class TagServiceImpl implements TagService {
             tagRepository.delete(id);
             log.info("Tag has been deleted {}", id);
         } catch (DaoException e) {
+            log.error(NOT_FOUND + ": tag " + id);
             throw new ServiceException(NOT_FOUND, e);
         }
     }

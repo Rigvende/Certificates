@@ -35,8 +35,10 @@ public class TagDtoConverter {
      */
     public List<TagDto> toResponseDtoList(List<Tag> tags) {
         List<TagDto> tagDtos = new ArrayList<>();
-        for (Tag tag: tags) {
-            tagDtos.add(toResponseDto(tag));
+        if (tags != null) {
+            for (Tag tag : tags) {
+                tagDtos.add(toResponseDto(tag));
+            }
         }
         return tagDtos;
     }
