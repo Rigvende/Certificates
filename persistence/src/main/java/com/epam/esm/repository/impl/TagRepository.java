@@ -59,10 +59,20 @@ public class TagRepository extends AbstractRepository<Tag> {
         throw new UnsupportedOperationException();
     }
 
+    /**
+     * Method: find tag in database by its name.
+     * @param  name: tag name
+     * @return found {@link Tag} instance
+     */
     public Tag findByName(String name) {
         return jdbcTemplate.queryForObject(SQL_FIND_TAG_BY_NAME, new Object[]{name}, rowMapper);
     }
 
+    /**
+     * Method: find tags by related certificate id.
+     * @param  id: certificate id
+     * @return list of {@link Tag} instances
+     */
     public List<Tag> findAllByCertificate(Long id) {
         return jdbcTemplate.query(SQL_FIND_BY_CERTIFICATE, new Object[]{id}, rowMapper);
     }

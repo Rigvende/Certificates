@@ -9,14 +9,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
-
 import static com.epam.esm.error.ErrorMessage.*;
 
 /**
  * Class-controller for REST-operations with {@link Tag} entity
- * Provides endpoints for CRD and search operations
+ * Provides URL for CRD and search operations
  * @author Marianna Patrusova
  * @version 1.0
  */

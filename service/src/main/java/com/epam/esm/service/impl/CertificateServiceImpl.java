@@ -121,10 +121,10 @@ public class CertificateServiceImpl implements CertificateService {
     public void delete(Long id) throws ServiceException {
         try {
             certificateRepository.delete(id);
-            log.info("Certificate has been deleted {}", id);
         } catch (DaoException e) {
             throw new ServiceException(NOT_FOUND, e);
         }
+        log.info("Certificate has been deleted {}", id);
     }
 
     /**
@@ -154,9 +154,9 @@ public class CertificateServiceImpl implements CertificateService {
 
     //method for tags manipulations during creating/modifying a certificate
     private void updateTagList(List<TagDto> tagDtoList, Long id) {
-        //save new tags if not exists:
+        //save new tags if not exist:
         List<Tag> newTags = saveNewUniqueTags(tagDtoList);
-        //create links between certificate & new tag:
+        //create links between certificate & new tags:
         if (newTags.size() > 0) {
             saveCertificateTagLink(id, newTags);
         }

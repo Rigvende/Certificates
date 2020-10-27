@@ -14,7 +14,7 @@ import static com.epam.esm.error.ErrorMessage.*;
 
 /**
  * Class-controller for REST-operations with {@link Certificate} entity
- * Provides endpoints for CRUD and search operations
+ * Provides URL for CRUD and search operations
  * @author Marianna Patrusova
  * @version 1.0
  */
@@ -49,7 +49,7 @@ public class CertificatesController {
             return ResponseEntity.ok(certificateDto);
         } catch (ServiceException e) {
             CustomError error = new CustomError(40402, ERROR_404_CERTIFICATE);
-            return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
         }
     }
 

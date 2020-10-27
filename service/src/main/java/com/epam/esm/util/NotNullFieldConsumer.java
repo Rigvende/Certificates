@@ -11,14 +11,13 @@ public final class NotNullFieldConsumer {
 
     /**
      * Method: check field for being not null, if true - consumer takes value of field
-     * @param checkingField: any field type
-     * @param consumerField: {@link Consumer} object parametrized by checkingField type
+     * @param checkedField: any field type
+     * @param consumerField: {@link Consumer} object parametrized by checkedField type
      */
-    public static <T> void changeIfPresent(T checkingField, Consumer<T> consumerField) {
-        if (checkingField != null) {
-            consumerField.accept(checkingField);
+    public static <T> void changeIfPresent(T checkedField, Consumer<T> consumerField) {
+        if (checkedField != null) {
+            consumerField.accept(checkedField);
         }
-
     }
 
 }
