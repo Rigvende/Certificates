@@ -32,9 +32,15 @@ public class CertificatesController {
     @GetMapping
     public ResponseEntity<List<CertificateDto>> findAll(@RequestParam(required = false) String tagName,
                                                         @RequestParam(required = false) String direction,
-                                                        @RequestParam(required = false) String column) {
+                                                        @RequestParam(required = false) String column,
+                                                        @RequestParam(required = false) String name,
+                                                        @RequestParam(required = false) String description) {
         if (tagName != null) {
             return ResponseEntity.ok(certificateService.findAllByTag(tagName));
+        } else if (name != null) {
+            return ResponseEntity.ok(certificateService.findAllByName(name));
+        } else if (description != null) {
+            return ResponseEntity.ok(certificateService.findAllByDescription(description));
         } else if (direction != null && column != null) {
             return ResponseEntity.ok(certificateService.findAllSorted(direction, column));
         } else {

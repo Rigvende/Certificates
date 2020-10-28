@@ -28,4 +28,8 @@ public interface CertificateService {
 
     List<CertificateDto> findAllSorted(String direction, String column);
 
+    List<CertificateDto> findAllByName(String name);
+
+    List<CertificateDto> findAllByDescription(String description);
+
 }

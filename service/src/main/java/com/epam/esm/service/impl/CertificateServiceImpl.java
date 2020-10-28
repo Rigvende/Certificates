@@ -152,6 +152,30 @@ public class CertificateServiceImpl implements CertificateService {
         return certificateDtoConverter.toResponseDtoList(certificates);
     }
 
+    /**
+     * Method: find all certificates by name
+     * @param  name: certificate name or part of name
+     * @return list of {@link CertificateDto}
+     */
+    @Override
+    public List<CertificateDto> findAllByName(String name) {
+        final List<Certificate> certificates = certificateRepository.findAllByName(name);
+        certificates.forEach(this::setTags);
+        return certificateDtoConverter.toResponseDtoList(certificates);
+    }
+
+    /**
+     * Method: find all certificates by description
+     * @param  description: certificate description or part of description
+     * @return list of {@link CertificateDto}
+     */
+    @Override
+    public List<CertificateDto> findAllByDescription(String description) {
+        final List<Certificate> certificates = certificateRepository.findAllByDescription(description);
+        certificates.forEach(this::setTags);
+        return certificateDtoConverter.toResponseDtoList(certificates);
+    }
+
     //method for tags manipulations during creating/modifying a certificate
     private void updateTagList(List<TagDto> tagDtoList, Long id) {
         //save new tags if not exist:
