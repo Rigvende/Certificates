@@ -4,11 +4,11 @@ import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 /**
- * Class for converting sql date to java date and back
+ * Class for converting sql timestamp to java local date and time and back
  * @author Marianna Patrusova
  * @version 1.0
  */
-public class DateConverter {
+public final class DateConverter {
 
     /**
      * Method: convert sql timestamp value to local date and time

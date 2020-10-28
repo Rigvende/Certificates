@@ -121,10 +121,10 @@ public class CertificateServiceImpl implements CertificateService {
     public void delete(Long id) throws ServiceException {
         try {
             certificateRepository.delete(id);
-            log.info("Certificate has been deleted {}", id);
         } catch (DaoException e) {
             throw new ServiceException(NOT_FOUND, e);
         }
+        log.info("Certificate has been deleted {}", id);
     }
 
     /**
@@ -152,11 +152,35 @@ public class CertificateServiceImpl implements CertificateService {
         return certificateDtoConverter.toResponseDtoList(certificates);
     }
 
+    /**
+     * Method: find all certificates by name
+     * @param  name: certificate name or part of name
+     * @return list of {@link CertificateDto}
+     */
+    @Override
+    public List<CertificateDto> findAllByName(String name) {
+        final List<Certificate> certificates = certificateRepository.findAllByName(name);
+        certificates.forEach(this::setTags);
+        return certificateDtoConverter.toResponseDtoList(certificates);
+    }
+
+    /**
+     * Method: find all certificates by description
+     * @param  description: certificate description or part of description
+     * @return list of {@link CertificateDto}
+     */
+    @Override
+    public List<CertificateDto> findAllByDescription(String description) {
+        final List<Certificate> certificates = certificateRepository.findAllByDescription(description);
+        certificates.forEach(this::setTags);
+        return certificateDtoConverter.toResponseDtoList(certificates);
+    }
+
     //method for tags manipulations during creating/modifying a certificate
     private void updateTagList(List<TagDto> tagDtoList, Long id) {
-        //save new tags if not exists:
+        //save new tags if not exist:
         List<Tag> newTags = saveNewUniqueTags(tagDtoList);
-        //create links between certificate & new tag:
+        //create links between certificate & new tags:
         if (newTags.size() > 0) {
             saveCertificateTagLink(id, newTags);
         }

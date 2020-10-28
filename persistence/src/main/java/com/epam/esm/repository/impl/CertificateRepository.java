@@ -37,6 +37,9 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
             "select c.id_certificate, c.name, c.description, c.price, c.create_date, c.last_update_date, c.duration " +
                     "from certificates c join certificate_tag ct on c.id_certificate = ct.id_certificate " +
                     "join tags t on ct.id_tag = t.id_tag where t.name = ?;";
+    private final static String SQL_FIND_BY_NAME = "select * from certificates where name like ?;";
+    private final static String SQL_FIND_BY_DESCRIPTION = "select * from certificates where description like ?;";
+
 
     @Autowired
     public CertificateRepository(CertificateMapper certificateMapper,
@@ -108,6 +111,26 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
      */
     public List<Certificate> findAllByTag(String tagName) {
         return jdbcTemplate.query(SQL_FIND_BY_TAG, new Object[]{tagName}, rowMapper);
+    }
+
+    /**
+     * Method: find all certificates by name in database.
+     * @param  name: certificate name or part of name
+     * @return list of {@link Certificate}
+     */
+    public List<Certificate> findAllByName(String name) {
+        name = "%" + name + "%";
+        return jdbcTemplate.query(SQL_FIND_BY_NAME, new Object[]{name}, rowMapper);
+    }
+
+    /**
+     * Method: find all certificates by description in database.
+     * @param  description: certificate description or part of description
+     * @return list of {@link Certificate}
+     */
+    public List<Certificate> findAllByDescription(String description) {
+        description = "%" + description + "%";
+        return jdbcTemplate.query(SQL_FIND_BY_DESCRIPTION, new Object[]{description}, rowMapper);
     }
 
     private Timestamp offsetToTimestamp(OffsetDateTime offsetDateTime) {

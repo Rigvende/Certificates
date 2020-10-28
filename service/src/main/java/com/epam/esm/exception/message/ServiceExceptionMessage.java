@@ -7,7 +7,7 @@ import com.epam.esm.exception.ServiceException;
  * @author Marianna Patrusova
  * @version 1.0
  */
-public class ServiceExceptionMessage {
+public final class ServiceExceptionMessage {
 
     public final static String ALREADY_EXISTS = "Entity already exists in database";
     public final static String NOT_FOUND = "Entity not found in database";

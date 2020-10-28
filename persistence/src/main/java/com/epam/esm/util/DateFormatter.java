@@ -1,14 +1,13 @@
 package com.epam.esm.util;
 
 import java.time.*;
-import java.time.format.DateTimeFormatter;
 
 /**
- * Class for converting date and time to ISO 8601 format and back
+ * Class for converting local date and time to ISO 8601 format and back
  * @author Marianna Patrusova
  * @version 1.0
  */
-public class DateFormatter {
+public final class DateFormatter {
 
     /**
      * Method: convert local date and time to ISO 8601 format

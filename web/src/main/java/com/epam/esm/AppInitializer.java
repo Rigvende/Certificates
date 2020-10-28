@@ -10,7 +10,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletRegistration;
 
 /**
- * Class for DispatcherServlet init
+ * Class for DispatcherServlet init and other on startup actions
  * @author Marianna Patrusova
  * @version 1.0
  */

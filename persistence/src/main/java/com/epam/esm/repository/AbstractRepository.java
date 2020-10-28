@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 /**
- * Abstract class for entity repositories
+ * Abstract class as parent for entity repositories
  * @author Marianna Patrusova
  * @version 1.0
  */
