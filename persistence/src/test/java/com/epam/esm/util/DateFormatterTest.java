@@ -22,6 +22,6 @@ class DateFormatterTest {
         OffsetDateTime offset = OffsetDateTime
                 .of(2020, 1, 12, 9, 10, 30, 3, ZoneOffset.ofHours(5));
         LocalDateTime actual = DateFormatter.formatOffsetDateTimeToLocal(offset);
-        assertEquals(actual.getHour(), 9);
+        assertEquals(actual.getDayOfMonth(), 12);
     }
 }

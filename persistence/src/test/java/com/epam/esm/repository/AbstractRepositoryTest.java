@@ -48,8 +48,10 @@ class AbstractRepositoryTest {
 
     @Test
     void findEntityById() {
-        assertNotNull(tagRepository.findEntityById(1L));
-        assertEquals(certificateRepository.findEntityById(2L).getName(), "Skating");
+        assertNotNull(certificateRepository.findEntityById(1L));
+        assertEquals(certificateRepository.findEntityById(1L).getName(), "Spa");
+        assertNotNull(tagRepository.findEntityById(2L));
+        assertEquals(tagRepository.findEntityById(2L).getName(), "rest");
     }
 
     @Test

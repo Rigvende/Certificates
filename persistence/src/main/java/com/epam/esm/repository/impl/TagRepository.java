@@ -51,14 +51,15 @@ public class TagRepository extends AbstractRepository<Tag> {
     @Override
     public Tag save(Tag tag) throws DaoException {
         KeyHolder key = new GeneratedKeyHolder();
-        assert tag.getId() != null || jdbcTemplate.update(
+        jdbcTemplate.update(
                 connection -> {
                     PreparedStatement ps =
                             connection.prepareStatement(SQL_SAVE_TAG, new String[] {"id_tag"});
                     ps.setString(1, tag.getName());
                     return ps;
-                }, key) > 0;
-        return findEntityById(Objects.requireNonNull(key.getKey()).longValue());
+                }, key);
+        Long id = Objects.requireNonNull(key.getKey()).longValue();
+        return findEntityById(id);
     }
 
     /**
@@ -78,8 +79,8 @@ public class TagRepository extends AbstractRepository<Tag> {
      * @param  name: tag name
      * @return found {@link Tag} instance
      */
-    public Tag findByName(String name) {
-        return jdbcTemplate.queryForObject(SQL_FIND_TAG_BY_NAME, new Object[]{name}, rowMapper);
+    public List<Tag> findByName(String name) {
+        return jdbcTemplate.query(SQL_FIND_TAG_BY_NAME, new Object[]{name}, rowMapper);
     }
 
     /**

@@ -44,7 +44,7 @@ class TagRepositoryTest {
 
     @Test
     void findByName() {
-        assertNotNull(tagRepository.findByName("spa"));
+        assertEquals(tagRepository.findByName("ggg").size(), 0);
     }
 
     @Test

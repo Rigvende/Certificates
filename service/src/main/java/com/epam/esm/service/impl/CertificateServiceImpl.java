@@ -178,27 +178,30 @@ public class CertificateServiceImpl implements CertificateService {
 
     //method for tags manipulations during creating/modifying a certificate
     private void updateTagList(List<TagDto> tagDtoList, Long id) {
+        //create link between certificate & old tag if link not exists
+        List<Tag> unlinkedTags = findTagsWithoutLinks(tagDtoList);
+        if (unlinkedTags != null && unlinkedTags.size() > 0) {
+            saveCertificateTagLink(id, unlinkedTags);
+        }
         //save new tags if not exist:
         List<Tag> newTags = saveNewUniqueTags(tagDtoList);
         //create links between certificate & new tags:
-        if (newTags.size() > 0) {
+        if (newTags != null && newTags.size() > 0) {
             saveCertificateTagLink(id, newTags);
-        }
-        //create link between certificate & old tag if link not exists
-        List<Tag> unlinkedTags = findTagsWithoutLinks(tagDtoList);
-        if (unlinkedTags.size() > 0) {
-            saveCertificateTagLink(id, unlinkedTags);
         }
         //delete link between certificate and non-implemented tag
         deleteCertificateTagLink(id, tagDtoList);
     }
 
     private List<Tag> saveNewUniqueTags(List<TagDto> tags) {
-        return tags.stream()
-                .filter(tag -> tag.getStatus().equals(TagDto.TagStatus.NEW)
-                        && tagRepository.findByName(tag.getName()) == null)
-                .map(tag -> tagRepository.save(tagDtoConverter.toNewTag(tag)))
-                .collect(Collectors.toList());
+        if (tags != null) {
+            return tags.stream()
+                    .filter(tag -> tag.getStatus().equals(TagDto.TagStatus.NEW)
+                            && tagRepository.findByName(tag.getName()).size() == 0)
+                    .map(tag -> tagRepository.save(tagDtoConverter.toNewTag(tag)))
+                    .collect(Collectors.toList());
+        }
+        return null;
     }
 
     private void saveCertificateTagLink(Long id, List<Tag> tags) {
@@ -206,17 +209,22 @@ public class CertificateServiceImpl implements CertificateService {
     }
 
     private List<Tag> findTagsWithoutLinks(List<TagDto> tags) {
-        return tags.stream()
-                .filter(tag -> (tag.getStatus().equals(TagDto.TagStatus.NEW))
-                        && tagRepository.findByName(tag.getName()) != null)
-                .map(tag -> tagRepository.findByName(tag.getName()))
-                .collect(Collectors.toList());
+        if (tags != null) {
+            return tags.stream()
+                    .filter(tag -> (tag.getStatus().equals(TagDto.TagStatus.NEW))
+                            && tagRepository.findByName(tag.getName()).size() > 0)
+                    .map(tag -> tagRepository.findByName(tag.getName()).get(0))
+                    .collect(Collectors.toList());
+        }
+        return null;
     }
 
     private void deleteCertificateTagLink(Long id, List<TagDto> tags) {
-        tags.stream()
-                .filter(tag -> tag.getStatus().equals(TagDto.TagStatus.DELETED))
-                .forEach(tag -> certificateRepository.deleteCertificateTagLink(id, tag.getId()));
+        if (tags != null) {
+            tags.stream()
+                    .filter(tag -> tag.getStatus().equals(TagDto.TagStatus.DELETED))
+                    .forEach(tag -> certificateRepository.deleteCertificateTagLink(id, tag.getId()));
+        }
     }
 
     private void setTags(Certificate certificate) {
