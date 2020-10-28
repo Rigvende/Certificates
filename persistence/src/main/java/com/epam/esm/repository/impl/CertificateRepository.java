@@ -9,11 +9,16 @@ import com.epam.esm.util.DateConverter;
 import com.epam.esm.util.DateFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+
+import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Child class of {@link CrudRepository} interface
@@ -58,14 +63,21 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
      */
     @Override
     public Certificate save(Certificate certificate) throws DaoException {
+        KeyHolder key = new GeneratedKeyHolder();
         assert certificate.getId() != null || jdbcTemplate.update
                 (
-                        SQL_SAVE_CERTIFICATE, certificate.getName(),
-                        certificate.getDescription(), certificate.getPrice(),
-                        offsetToTimestamp(certificate.getCreateDate()),
-                        certificate.getDuration()
+                        connection -> {
+                            PreparedStatement ps =
+                                    connection.prepareStatement(SQL_SAVE_CERTIFICATE, new String[] {"id_certificate"});
+                            ps.setString(1, certificate.getName());
+                            ps.setString(2, certificate.getDescription());
+                            ps.setBigDecimal(3, certificate.getPrice());
+                            ps.setTimestamp(4, offsetToTimestamp(certificate.getCreateDate()));
+                            ps.setInt(5, certificate.getDuration());
+                            return ps;
+                        }, key
                 ) > 0;
-        return findEntityById(certificate.getId());
+        return findEntityById(Objects.requireNonNull(key.getKey()).longValue());
     }
 
     /**
@@ -134,7 +146,7 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
     }
 
     private Timestamp offsetToTimestamp(OffsetDateTime offsetDateTime) {
-        LocalDateTime localDateTime = DateFormatter.formatDateToLocal(offsetDateTime);
+        LocalDateTime localDateTime = DateFormatter.formatOffsetDateTimeToLocal(offsetDateTime);
         return DateConverter.convertSqlTimestampFromDate(localDateTime);
     }
 
