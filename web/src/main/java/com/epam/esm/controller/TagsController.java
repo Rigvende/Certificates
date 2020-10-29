@@ -41,7 +41,7 @@ public class TagsController {
             return ResponseEntity.ok(tagDto);
         } catch (ServiceException e) {
             CustomError error = new CustomError(40401, ERROR_404_TAG);
-            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         }
     }
 
@@ -52,7 +52,7 @@ public class TagsController {
             return ResponseEntity.ok("Tag has been saved");
         } catch (ServiceException e) {
             CustomError error = new CustomError(50001, ERROR_500_TAG);
-            return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 
@@ -63,7 +63,7 @@ public class TagsController {
             return ResponseEntity.ok("Tag has been deleted");
         } catch (ServiceException e) {
             CustomError error = new CustomError(40401, ERROR_404_TAG);
-            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         }
     }
 
