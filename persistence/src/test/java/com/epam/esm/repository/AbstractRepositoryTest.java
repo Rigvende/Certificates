@@ -4,15 +4,14 @@ import com.epam.esm.mapper.CertificateMapper;
 import com.epam.esm.mapper.TagMapper;
 import com.epam.esm.repository.impl.CertificateRepository;
 import com.epam.esm.repository.impl.TagRepository;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AbstractRepositoryTest {
 
     private static EmbeddedDatabase embeddedDatabase;
@@ -30,6 +29,7 @@ class AbstractRepositoryTest {
         certificateRepository = new CertificateRepository(new CertificateMapper(), jdbcTemplate);
     }
 
+    @Order(1)
     @Test
     void findAll() {
         assertTrue(tagRepository.findAll().size() > 0);
@@ -38,6 +38,7 @@ class AbstractRepositoryTest {
         assertEquals(certificateRepository.findAll().get(0).getName(), "Spa");
     }
 
+    @Order(2)
     @Test
     void findAllSorted() {
         assertEquals(certificateRepository
@@ -46,6 +47,7 @@ class AbstractRepositoryTest {
                 .findAllSorted("desc", "name").get(0).getName(), "Pizza-bar");
     }
 
+    @Order(3)
     @Test
     void findEntityById() {
         assertNotNull(certificateRepository.findEntityById(1L));
@@ -54,6 +56,7 @@ class AbstractRepositoryTest {
         assertEquals(tagRepository.findEntityById(2L).getName(), "rest");
     }
 
+    @Order(4)
     @Test
     void delete() {
         assertTrue(tagRepository.delete(1L));
