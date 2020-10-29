@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import javax.validation.Valid;
 import java.util.List;
@@ -22,6 +23,7 @@ import static com.epam.esm.error.ErrorMessage.*;
  */
 @Slf4j
 @RestController
+@Validated
 @RequestMapping(value = "/v1/certificates", produces = "application/json")
 public class CertificatesController {
 
@@ -52,7 +54,7 @@ public class CertificatesController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> findById(@PathVariable("id") Long id) {
+    public ResponseEntity<?> findById(@PathVariable("id")  Long id) {
         try {
             CertificateDto certificateDto = certificateService.findById(id);
             return ResponseEntity.ok(certificateDto);
@@ -64,7 +66,7 @@ public class CertificatesController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<?> save(@RequestBody @Valid CertificateDto certificateDto) {
+    public ResponseEntity<?> save(@Valid @RequestBody CertificateDto certificateDto) {
         try {
             certificateService.save(certificateDto);
             return ResponseEntity.ok("Certificate has been saved");
