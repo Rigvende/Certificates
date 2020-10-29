@@ -26,7 +26,7 @@ public interface CrudRepository<T> {
      * @param id is table's id of deleting entity
      * @return boolean
      */
-    boolean delete(long id);
+    boolean delete(Long id);
 
     /**
      * Method: update database table's row depending on entity instance.
@@ -49,5 +49,5 @@ public interface CrudRepository<T> {
      * @return proper entity type (e.g. {@link AbstractEntity} children)
      * @throws DaoException object
      */
-    T findEntityById(long id) throws DaoException;
+    T findEntityById(Long id) throws DaoException;
 }

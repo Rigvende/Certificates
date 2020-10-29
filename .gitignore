@@ -4,6 +4,7 @@ web/target/
 persistence/target/
 service/target/
 log.log
+web/src/test/java/com/epam/esm/test.http
 
 # IntelliJ IDEA
 .idea

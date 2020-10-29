@@ -17,8 +17,13 @@ CREATE TABLE certificate_tag (
   PRIMARY KEY (`id_certificate`, `id_tag`));
 
 ALTER TABLE certificate_tag
-  ADD FOREIGN KEY (`id_tag`) REFERENCES tags (`id_tag`)
-  ON DELETE CASCADE ON UPDATE NO ACTION;
-  ALTER TABLE certificate_tag
-  ADD FOREIGN KEY (`id_certificate`) REFERENCES certificates (`id_certificate`)
-  ON DELETE CASCADE ON UPDATE NO ACTION;
+ADD CONSTRAINT `tag_fk`
+  FOREIGN KEY (`id_tag`)
+  REFERENCES tags (`id_tag`)
+  ON DELETE CASCADE
+  ON UPDATE NO ACTION,
+ADD CONSTRAINT `certificate_fk`
+  FOREIGN KEY (`id_certificate`)
+  REFERENCES certificates (`id_certificate`)
+  ON DELETE CASCADE
+  ON UPDATE NO ACTION;

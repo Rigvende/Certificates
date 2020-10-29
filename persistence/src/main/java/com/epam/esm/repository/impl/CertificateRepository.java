@@ -9,11 +9,15 @@ import com.epam.esm.util.DateConverter;
 import com.epam.esm.util.DateFormatter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
+import java.sql.PreparedStatement;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Child class of {@link CrudRepository} interface
@@ -52,43 +56,51 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
 
     /**
      * Method: save one entity in database.
-     * @param  certificate: instance of {@link Certificate} entity
-     * @throws DaoException if data access failed while finding saved entity in database
+     * @param certificate: instance of {@link Certificate} entity
      * @return saved instance of {@link Certificate}
+     * @throws DaoException if data access failed while finding saved entity in database
      */
     @Override
     public Certificate save(Certificate certificate) throws DaoException {
-        assert certificate.getId() != null || jdbcTemplate.update
+        KeyHolder key = new GeneratedKeyHolder();
+        jdbcTemplate.update
                 (
-                        SQL_SAVE_CERTIFICATE, certificate.getName(),
-                        certificate.getDescription(), certificate.getPrice(),
-                        offsetToTimestamp(certificate.getCreateDate()),
-                        certificate.getDuration()
-                ) > 0;
-        return findEntityById(certificate.getId());
+                        connection -> {
+                            PreparedStatement ps =
+                                    connection.prepareStatement(SQL_SAVE_CERTIFICATE, new String[]{"id_certificate"});
+                            ps.setString(1, certificate.getName());
+                            ps.setString(2, certificate.getDescription());
+                            ps.setBigDecimal(3, certificate.getPrice());
+                            ps.setTimestamp(4, offsetToTimestamp(certificate.getCreateDate()));
+                            ps.setInt(5, certificate.getDuration());
+                            return ps;
+                        }, key
+                );
+        Long id = Objects.requireNonNull(key.getKey()).longValue();
+        return findEntityById(id);
     }
 
     /**
      * Method: update one entity in database.
-     * @param  certificate: instance of {@link Certificate} entity
-     * @throws DaoException if data access failed while finding updated entity in database
+     * @param certificate: instance of {@link Certificate} entity
      * @return updated instance of {@link Certificate}
+     * @throws DaoException if data access failed while finding updated entity in database
      */
     @Override
     public Certificate update(Certificate certificate) throws DaoException {
-        assert certificate.getId() != null && jdbcTemplate.update
-                    (
-                            SQL_UPDATE_CERTIFICATE, certificate.getName(),
-                            certificate.getDescription(), certificate.getPrice(),
-                            offsetToTimestamp(certificate.getLastUpdateDate()),
-                            certificate.getDuration(), certificate.getId()
-                    ) > 0;
+        jdbcTemplate.update
+                (
+                        SQL_UPDATE_CERTIFICATE, certificate.getName(),
+                        certificate.getDescription(), certificate.getPrice(),
+                        offsetToTimestamp(certificate.getLastUpdateDate()),
+                        certificate.getDuration(), certificate.getId()
+                );
         return findEntityById(certificate.getId());
     }
 
     /**
      * Method: save many-to-many connection between tag and certificate in the cross database table.
-     * @param  certificateId: certificate id
+     * @param certificateId: certificate id
      * @param tagId: tag id
      */
     public void saveCertificateTagLink(long certificateId, long tagId) {
@@ -97,7 +109,7 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
 
     /**
      * Method: delete many-to-many connection between tag and certificate in the cross database table.
-     * @param  certificateId: certificate id
+     * @param certificateId: certificate id
      * @param tagId: tag id
      */
     public void deleteCertificateTagLink(long certificateId, long tagId) {
@@ -106,7 +118,7 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
 
     /**
      * Method: find all certificates by related tag name in database.
-     * @param  tagName: tag name
+     * @param tagName: tag name
      * @return list of {@link Certificate}
      */
     public List<Certificate> findAllByTag(String tagName) {
@@ -115,7 +127,7 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
 
     /**
      * Method: find all certificates by name in database.
-     * @param  name: certificate name or part of name
+     * @param name: certificate name or part of name
      * @return list of {@link Certificate}
      */
     public List<Certificate> findAllByName(String name) {
@@ -125,7 +137,7 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
 
     /**
      * Method: find all certificates by description in database.
-     * @param  description: certificate description or part of description
+     * @param description: certificate description or part of description
      * @return list of {@link Certificate}
      */
     public List<Certificate> findAllByDescription(String description) {
@@ -134,7 +146,7 @@ public class CertificateRepository extends AbstractRepository<Certificate> {
     }
 
     private Timestamp offsetToTimestamp(OffsetDateTime offsetDateTime) {
-        LocalDateTime localDateTime = DateFormatter.formatDateToLocal(offsetDateTime);
+        LocalDateTime localDateTime = DateFormatter.formatOffsetDateTimeToLocal(offsetDateTime);
         return DateConverter.convertSqlTimestampFromDate(localDateTime);
     }
 

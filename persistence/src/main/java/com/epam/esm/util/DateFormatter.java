@@ -14,7 +14,7 @@ public final class DateFormatter {
      * @param localDateTime: {@link LocalDateTime} instance
      * @return {@link OffsetDateTime} representation of date and time
      */
-    public static OffsetDateTime formatDateToIso8601(LocalDateTime localDateTime) {
+    public static OffsetDateTime formatLocalDateTimeToOffset(LocalDateTime localDateTime) {
         return localDateTime.atZone(ZoneId.systemDefault()).toOffsetDateTime();
     }
 
@@ -23,7 +23,7 @@ public final class DateFormatter {
      * @param offsetDateTime: {@link OffsetDateTime} instance
      * @return {@link LocalDateTime} representation of date and time
      */
-    public static LocalDateTime formatDateToLocal(OffsetDateTime offsetDateTime) {
+    public static LocalDateTime formatOffsetDateTimeToLocal(OffsetDateTime offsetDateTime) {
         return offsetDateTime.toLocalDateTime();
     }
 

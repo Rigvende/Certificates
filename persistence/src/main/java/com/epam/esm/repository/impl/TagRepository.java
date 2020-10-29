@@ -8,9 +8,16 @@ import com.epam.esm.repository.CrudRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.PreparedStatementCreator;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Child class of {@link CrudRepository} interface
@@ -23,7 +30,7 @@ import java.util.List;
 public class TagRepository extends AbstractRepository<Tag> {
 
     private final static String SQL_SAVE_TAG = "insert into tags (name) values (?);";
-    private final static String SQL_FIND_TAG_BY_NAME = "select id, name from tags where name = ?;";
+    private final static String SQL_FIND_TAG_BY_NAME = "select id_tag, name from tags where name = ?;";
     private final static String SQL_FIND_BY_CERTIFICATE = "select t.id_tag, t.name from tags t join certificate_tag ct " +
             "on t.id_tag = ct.id_tag where ct.id_certificate = ?;";
 
@@ -43,8 +50,16 @@ public class TagRepository extends AbstractRepository<Tag> {
      */
     @Override
     public Tag save(Tag tag) throws DaoException {
-        assert tag.getId() != null || jdbcTemplate.update(SQL_SAVE_TAG, tag.getName()) > 0;
-        return findEntityById(tag.getId());
+        KeyHolder key = new GeneratedKeyHolder();
+        jdbcTemplate.update(
+                connection -> {
+                    PreparedStatement ps =
+                            connection.prepareStatement(SQL_SAVE_TAG, new String[] {"id_tag"});
+                    ps.setString(1, tag.getName());
+                    return ps;
+                }, key);
+        Long id = Objects.requireNonNull(key.getKey()).longValue();
+        return findEntityById(id);
     }
 
     /**
@@ -56,7 +71,7 @@ public class TagRepository extends AbstractRepository<Tag> {
     @Override
     public Tag update(Tag tag) {
         log.warn("Attempt to update tag {}", tag);
-        throw new UnsupportedOperationException();
+        throw new UnsupportedOperationException("Tag update is unsupported");
     }
 
     /**
@@ -64,8 +79,8 @@ public class TagRepository extends AbstractRepository<Tag> {
      * @param  name: tag name
      * @return found {@link Tag} instance
      */
-    public Tag findByName(String name) {
-        return jdbcTemplate.queryForObject(SQL_FIND_TAG_BY_NAME, new Object[]{name}, rowMapper);
+    public List<Tag> findByName(String name) {
+        return jdbcTemplate.query(SQL_FIND_TAG_BY_NAME, new Object[]{name}, rowMapper);
     }
 
     /**

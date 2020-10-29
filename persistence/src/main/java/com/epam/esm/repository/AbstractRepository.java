@@ -53,7 +53,7 @@ public abstract class AbstractRepository<T extends AbstractEntity> implements Cr
      * @return instance of {@link AbstractEntity} child
      */
     @Override
-    public T findEntityById(long id) throws DaoException {
+    public T findEntityById(Long id) throws DaoException {
         T t;
         try {
             t = jdbcTemplate.queryForObject(String.format(SQL_FIND_ONE, tableName, tableId),
@@ -71,7 +71,7 @@ public abstract class AbstractRepository<T extends AbstractEntity> implements Cr
      * @return boolean true if operation is successful
      */
     @Override
-    public boolean delete(long id) {
+    public boolean delete(Long id) {
         return jdbcTemplate.update(String.format(SQL_DELETE_ONE, tableName, tableId), id) == 1;
     }
 
