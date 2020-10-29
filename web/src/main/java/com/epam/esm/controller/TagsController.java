@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import javax.validation.Valid;
 import java.util.List;
 import static com.epam.esm.error.ErrorMessage.*;
 
@@ -49,7 +50,7 @@ public class TagsController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<?> save(@RequestBody TagDto tagDto) throws ServiceException {
+    public ResponseEntity<?> save(@RequestBody @Valid TagDto tagDto) throws ServiceException {
         try {
             tagService.save(tagDto);
             return ResponseEntity.ok("Tag has been saved");

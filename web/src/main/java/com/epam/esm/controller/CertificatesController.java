@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import javax.validation.Valid;
 import java.util.List;
 import static com.epam.esm.error.ErrorMessage.*;
 
@@ -63,7 +64,7 @@ public class CertificatesController {
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<?> save(@RequestBody CertificateDto certificateDto) {
+    public ResponseEntity<?> save(@RequestBody @Valid CertificateDto certificateDto) {
         try {
             certificateService.save(certificateDto);
             return ResponseEntity.ok("Certificate has been saved");
@@ -76,7 +77,7 @@ public class CertificatesController {
 
     @PatchMapping(path = "/{id}", consumes = "application/json")
     public ResponseEntity<?> update(@PathVariable("id") Long id,
-                                         @RequestBody CertificateDto certificateDto) {
+                                         @RequestBody @Valid CertificateDto certificateDto) {
         try {
             certificateService.update(id, certificateDto);
             return ResponseEntity.ok("Certificate has been updated");
