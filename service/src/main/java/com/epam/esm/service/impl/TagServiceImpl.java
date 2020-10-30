@@ -12,7 +12,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
-import static com.epam.esm.exception.message.ServiceExceptionMessage.*;
 
 /**
  * Class provides business logic methods for CRD and search operations
@@ -46,8 +45,7 @@ public class TagServiceImpl implements TagService {
             Tag tag = tagRepository.findEntityById(id);
             return tagDtoConverter.toResponseDto(tag);
         } catch (DaoException e) {
-            log.error(NOT_FOUND + ": tag " + id);
-            throw new ServiceException(NOT_FOUND, e);
+            throw new ServiceException(e);
         }
     }
 
@@ -73,8 +71,7 @@ public class TagServiceImpl implements TagService {
         try {
             savedTag = tagRepository.save(tag);
         } catch (DaoException e) {
-            log.error(ALREADY_EXISTS + ": tag " + tagDto.getName());
-            throw new ServiceException(ALREADY_EXISTS, e);
+            throw new ServiceException(e);
         }
         log.info("Tag has been saved {}", savedTag);
     }
@@ -90,8 +87,7 @@ public class TagServiceImpl implements TagService {
             tagRepository.delete(id);
             log.info("Tag has been deleted {}", id);
         } catch (DaoException e) {
-            log.error(NOT_FOUND + ": tag " + id);
-            throw new ServiceException(NOT_FOUND, e);
+            throw new ServiceException(e);
         }
     }
 

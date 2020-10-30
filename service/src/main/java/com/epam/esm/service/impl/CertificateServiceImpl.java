@@ -17,8 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
-import static com.epam.esm.exception.message.ServiceExceptionMessage.ALREADY_EXISTS;
-import static com.epam.esm.exception.message.ServiceExceptionMessage.NOT_FOUND;
 
 /**
  * Class provides business logic methods for CRUD and search operations
@@ -60,7 +58,7 @@ public class CertificateServiceImpl implements CertificateService {
             setTags(certificate);
             return certificateDtoConverter.toResponseDto(certificate);
         } catch (DaoException e) {
-            throw new ServiceException(NOT_FOUND, e);
+            throw new ServiceException(e);
         }
     }
 
@@ -87,7 +85,7 @@ public class CertificateServiceImpl implements CertificateService {
         try {
             savedCertificate = certificateRepository.save(certificate);
         } catch (DaoException e) {
-            throw new ServiceException(ALREADY_EXISTS, e);
+            throw new ServiceException(e);
         }
         updateTagList(certificateDto.getTags(), savedCertificate.getId());
         log.info("Certificate has been saved {}", savedCertificate);
@@ -106,7 +104,7 @@ public class CertificateServiceImpl implements CertificateService {
         try {
             updatedCertificate = certificateRepository.update(certificate);
         } catch (DaoException e) {
-            throw new ServiceException(NOT_FOUND, e);
+            throw new ServiceException(e);
         }
         updateTagList(certificateDto.getTags(), id);
         log.info("Certificate has been updated {}", updatedCertificate);
@@ -122,7 +120,7 @@ public class CertificateServiceImpl implements CertificateService {
         try {
             certificateRepository.delete(id);
         } catch (DaoException e) {
-            throw new ServiceException(NOT_FOUND, e);
+            throw new ServiceException(e);
         }
         log.info("Certificate has been deleted {}", id);
     }

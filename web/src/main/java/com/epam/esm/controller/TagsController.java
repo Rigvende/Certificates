@@ -5,10 +5,13 @@ import com.epam.esm.entity.impl.Tag;
 import com.epam.esm.error.CustomError;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.service.TagService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import javax.validation.Valid;
 import java.util.List;
 import static com.epam.esm.error.ErrorMessage.*;
 
@@ -18,7 +21,9 @@ import static com.epam.esm.error.ErrorMessage.*;
  * @author Marianna Patrusova
  * @version 1.0
  */
+@Slf4j
 @RestController
+@Validated
 @RequestMapping(value = "/v1/tags", produces = "application/json")
 public class TagsController {
 
@@ -40,19 +45,21 @@ public class TagsController {
             TagDto tagDto = tagService.findById(id);
             return ResponseEntity.ok(tagDto);
         } catch (ServiceException e) {
+            log.error(NOT_FOUND + ": tag " + id);
             CustomError error = new CustomError(40401, ERROR_404_TAG);
-            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         }
     }
 
     @PostMapping(consumes = "application/json")
-    public ResponseEntity<?> save(@RequestBody TagDto tagDto) throws ServiceException {
+    public ResponseEntity<?> save(@RequestBody @Valid TagDto tagDto) throws ServiceException {
         try {
             tagService.save(tagDto);
             return ResponseEntity.ok("Tag has been saved");
         } catch (ServiceException e) {
+            log.error(ALREADY_EXISTS + ": tag " + tagDto.getName());
             CustomError error = new CustomError(50001, ERROR_500_TAG);
-            return new ResponseEntity<>(error, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
         }
     }
 
@@ -62,8 +69,9 @@ public class TagsController {
             tagService.delete(id);
             return ResponseEntity.ok("Tag has been deleted");
         } catch (ServiceException e) {
+            log.error(NOT_FOUND + ": tag " + id);
             CustomError error = new CustomError(40401, ERROR_404_TAG);
-            return new ResponseEntity<>(error, HttpStatus.NOT_FOUND);
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
         }
     }
 
