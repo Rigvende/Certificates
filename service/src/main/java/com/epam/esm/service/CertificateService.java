@@ -3,6 +3,7 @@ package com.epam.esm.service;
 import com.epam.esm.dto.CertificateDto;
 import com.epam.esm.entity.impl.Certificate;
 import com.epam.esm.exception.ServiceException;
+import com.epam.esm.util.ErrorField;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -14,9 +15,9 @@ import java.util.List;
 @Service
 public interface CertificateService {
 
-    void save(CertificateDto certificateDto) throws ServiceException;
+    List<ErrorField> save(CertificateDto certificateDto) throws ServiceException;
 
-    void update(Long id, CertificateDto certificateDto) throws ServiceException;
+    List<ErrorField> update(Long id, CertificateDto certificateDto) throws ServiceException;
 
     void delete(Long id) throws ServiceException;
 

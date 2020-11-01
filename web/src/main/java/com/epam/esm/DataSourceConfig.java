@@ -7,6 +7,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+
 import javax.sql.DataSource;
 import java.util.Objects;
 
@@ -18,6 +20,7 @@ import java.util.Objects;
 @Configuration
 @ComponentScan("com.epam.esm")
 @EnableTransactionManagement
+@EnableWebMvc
 @PropertySource("classpath:connectionDB.properties")
 public class DataSourceConfig {
 

@@ -1,7 +1,9 @@
 package com.epam.esm.error;
 
+import com.epam.esm.util.ErrorField;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import java.util.List;
 
 /**
  * Class as error response object
@@ -14,5 +16,6 @@ public class CustomError {
 
     private final int code;
     private final String message;
+    private final List<ErrorField> fields;
 
 }

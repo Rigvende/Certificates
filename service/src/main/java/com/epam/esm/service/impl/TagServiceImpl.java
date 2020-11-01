@@ -7,6 +7,8 @@ import com.epam.esm.exception.DaoException;
 import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.impl.TagRepository;
 import com.epam.esm.service.TagService;
+import com.epam.esm.util.ErrorField;
+import com.epam.esm.util.FieldsValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -36,8 +38,8 @@ public class TagServiceImpl implements TagService {
     /**
      * Method: find one {@link Tag} entity
      * @param id: tag id
-     * @throws ServiceException if entity not found
      * @return instance of ({@link TagDto}
+     * @throws ServiceException if entity not found
      */
     @Override
     public TagDto findById(Long id) throws ServiceException {
@@ -61,25 +63,30 @@ public class TagServiceImpl implements TagService {
 
     /**
      * Method: save one {@link Tag} entity
-     * @throws ServiceException if entity already exists
      * @param tagDto: instance of {@link TagDto}
+     * @throws ServiceException if entity already exists
+     * @return boolean true for success
      */
     @Override
-    public void save(TagDto tagDto) throws ServiceException {
-        final Tag tag = tagDtoConverter.toNewTag(tagDto);
-        Tag savedTag;
-        try {
-            savedTag = tagRepository.save(tag);
-        } catch (DaoException e) {
-            throw new ServiceException(e);
+    public List<ErrorField> save(TagDto tagDto) throws ServiceException {
+        List<ErrorField> errors = FieldsValidator.validateTag(tagDto);
+        if (errors.isEmpty()) {
+            final Tag tag = tagDtoConverter.toNewTag(tagDto);
+            Tag savedTag;
+            try {
+                savedTag = tagRepository.save(tag);
+            } catch (DaoException e) {
+                throw new ServiceException(e);
+            }
+            log.info("Tag has been saved {}", savedTag);
         }
-        log.info("Tag has been saved {}", savedTag);
+        return errors;
     }
 
     /**
      * Method: delete one {@link Tag} entity
-     * @throws ServiceException if entity not found
      * @param id: tag id
+     * @throws ServiceException if entity not found
      */
     @Override
     public void delete(Long id) throws ServiceException {
