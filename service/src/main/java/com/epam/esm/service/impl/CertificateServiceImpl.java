@@ -11,6 +11,8 @@ import com.epam.esm.exception.ServiceException;
 import com.epam.esm.repository.impl.CertificateRepository;
 import com.epam.esm.repository.impl.TagRepository;
 import com.epam.esm.service.CertificateService;
+import com.epam.esm.util.ErrorField;
+import com.epam.esm.util.FieldsValidator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -77,37 +79,47 @@ public class CertificateServiceImpl implements CertificateService {
      * Method: save one {@link Certificate} entity and its tags
      * @throws ServiceException if entity already exists
      * @param certificateDto: instance of {@link CertificateDto}
+     * @return boolean true for success
      */
     @Override
-    public void save(CertificateDto certificateDto) throws ServiceException {
-        final Certificate certificate = certificateDtoConverter.toNewCertificate(certificateDto);
-        Certificate savedCertificate;
-        try {
-            savedCertificate = certificateRepository.save(certificate);
-        } catch (DaoException e) {
-            throw new ServiceException(e);
+    public List<ErrorField> save(CertificateDto certificateDto) throws ServiceException {
+        List<ErrorField> errors = FieldsValidator.validateCertificate(certificateDto);
+        if (errors.isEmpty()) {
+            final Certificate certificate = certificateDtoConverter.toNewCertificate(certificateDto);
+            Certificate savedCertificate;
+            try {
+                savedCertificate = certificateRepository.save(certificate);
+            } catch (DaoException e) {
+                throw new ServiceException(e);
+            }
+            updateTagList(certificateDto.getTags(), savedCertificate.getId());
+            log.info("Certificate has been saved {}", savedCertificate);
         }
-        updateTagList(certificateDto.getTags(), savedCertificate.getId());
-        log.info("Certificate has been saved {}", savedCertificate);
+        return errors;
     }
 
     /**
      * Method: update fields of one {@link Certificate} entity
      * @throws ServiceException if entity not found
      * @param certificateDto: instance of {@link CertificateDto}
+     * @return boolean true for success
      */
     @Override
-    public void update(Long id, CertificateDto certificateDto) throws ServiceException {
-        Certificate certificate = certificateRepository.findEntityById(id);
-        certificate = certificateDtoConverter.toUpdatedCertificate(certificate, certificateDto);
-        Certificate updatedCertificate;
-        try {
-            updatedCertificate = certificateRepository.update(certificate);
-        } catch (DaoException e) {
-            throw new ServiceException(e);
+    public List<ErrorField> update(Long id, CertificateDto certificateDto) throws ServiceException {
+        List<ErrorField> errors = FieldsValidator.validateCertificate(certificateDto);
+        if (errors.isEmpty()) {
+            Certificate certificate = certificateRepository.findEntityById(id);
+            certificate = certificateDtoConverter.toUpdatedCertificate(certificate, certificateDto);
+            Certificate updatedCertificate;
+            try {
+                updatedCertificate = certificateRepository.update(certificate);
+            } catch (DaoException e) {
+                throw new ServiceException(e);
+            }
+            updateTagList(certificateDto.getTags(), id);
+            log.info("Certificate has been updated {}", updatedCertificate);
         }
-        updateTagList(certificateDto.getTags(), id);
-        log.info("Certificate has been updated {}", updatedCertificate);
+        return errors;
     }
 
     /**

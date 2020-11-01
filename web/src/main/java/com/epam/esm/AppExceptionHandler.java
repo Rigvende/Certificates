@@ -24,35 +24,35 @@ public class AppExceptionHandler {
     public ResponseEntity<Object> handleConflict(HttpMessageNotReadableException e) {
         log.error("Global error. Invalid arguments. " + e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new CustomError(40000, ERROR_400));
+                .body(new CustomError(40000, ERROR_400, null));
     }
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<Object> handleConflict(MethodArgumentTypeMismatchException e) {
         log.error("Global error. Bad request. " + e);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new CustomError(40000, ERROR_400));
+                .body(new CustomError(40000, ERROR_400, null));
     }
 
     @ExceptionHandler(NoHandlerFoundException.class)
     public ResponseEntity<Object> handleNotFound(NoHandlerFoundException e) {
         log.error("Global error. Resource not found. " + e);
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                .body(new CustomError(40400, ERROR_404));
+                .body(new CustomError(40400, ERROR_404, null));
     }
 
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<Object> handleNull(NullPointerException e) {
         log.error("Global error. Null pointer exception. " + e);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                .body(new CustomError(50000, ERROR_500));
+                .body(new CustomError(50000, ERROR_500, null));
     }
 
     @ExceptionHandler(Throwable.class)
     public ResponseEntity<Object> handleAll(Throwable e) {
         log.error("Something goes wrong. " + e);
         return ResponseEntity.status(HttpStatus.CONFLICT)
-                .body(new CustomError(0, ERROR_0));
+                .body(new CustomError(0, ERROR_0, null));
     }
 
 }

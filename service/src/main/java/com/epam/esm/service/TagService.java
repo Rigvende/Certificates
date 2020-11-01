@@ -3,6 +3,7 @@ package com.epam.esm.service;
 import com.epam.esm.dto.TagDto;
 import com.epam.esm.entity.impl.Tag;
 import com.epam.esm.exception.ServiceException;
+import com.epam.esm.util.ErrorField;
 import org.springframework.stereotype.Service;
 import java.util.List;
 
@@ -14,7 +15,7 @@ import java.util.List;
 @Service
 public interface TagService {
 
-    void save(TagDto tagDto) throws ServiceException;
+    List<ErrorField> save(TagDto tagDto) throws ServiceException;
 
     void delete(Long id) throws ServiceException;
 
